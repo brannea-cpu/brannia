@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Análisis de Presencia Digital — Eddy Vivas | Brannea</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg2: #111111;
+      --bg3: #1a1a1a;
+      --border: #222;
+      --purple: #8b5cf6;
+      --purple-light: #a78bfa;
+      --purple-dim: rgba(139,92,246,0.12);
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --text-dim: #444;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes pulseGlow {
+      0%,100% { box-shadow: 0 0 20px rgba(139,92,246,0.3); }
+      50%      { box-shadow: 0 0 45px rgba(139,92,246,0.65); }
+    }
+    @keyframes drawRed {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes drawPurple {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      height: 58px; padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { font-size: 14px; font-weight: 800; color: var(--purple-light); letter-spacing: .06em; text-transform: uppercase; }
+    .nav-label { font-size: 12px; color: var(--text-dim); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 100px 24px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -180px; left: 50%; transform: translateX(-50%);
+      width: 900px; height: 900px;
+      background: radial-gradient(circle, rgba(139,92,246,0.13) 0%, transparent 68%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--purple-dim);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 100px; padding: 6px 18px;
+      font-size: 11px; color: var(--purple-light);
+      font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeIn .8s ease both;
+    }
+    .hero-title {
+      font-size: clamp(38px, 7vw, 74px);
+      font-weight: 900; line-height: 1.05; margin-bottom: 14px;
+      animation: fadeUp .9s ease .1s both;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, var(--purple-light), #c084fc, var(--purple));
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+    .hero-name {
+      font-size: clamp(26px, 5vw, 50px); font-weight: 700;
+      color: var(--text); margin-bottom: 28px;
+      animation: fadeUp .9s ease .2s both;
+    }
+    .hero-meta {
+      display: flex; align-items: center; justify-content: center;
+      gap: 20px; flex-wrap: wrap;
+      animation: fadeUp .9s ease .3s both;
+    }
+    .hero-meta-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-muted); }
+    .hero-meta-item i { color: var(--purple); font-size: 12px; }
+    .scroll-hint {
+      position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--text-dim); font-size: 11px; letter-spacing: .06em;
+      text-transform: uppercase; animation: fadeIn 1.5s ease 1.2s both;
+    }
+    .scroll-arrow {
+      width: 18px; height: 18px;
+      border-right: 2px solid var(--purple); border-bottom: 2px solid var(--purple);
+      transform: rotate(45deg);
+      animation: fadeUp .8s ease infinite alternate;
+    }
+
+    /* SECTIONS */
+    .section-wrap { padding: 80px 24px; max-width: 920px; margin: 0 auto; }
+    .section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--purple); margin-bottom: 10px;
+    }
+    .section-title { font-size: clamp(22px, 4vw, 38px); font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .section-subtitle { font-size: 15px; color: var(--text-muted); max-width: 560px; margin-bottom: 44px; line-height: 1.6; }
+
+    .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+
+    /* METRICS */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: 14px; margin-top: 36px; }
+    .metric-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+      padding: 26px 20px; text-align: center;
+      transition: border-color .3s, transform .3s;
+    }
+    .metric-card:hover { border-color: var(--purple); transform: translateY(-4px); }
+    .metric-icon { font-size: 18px; color: var(--purple); margin-bottom: 12px; }
+    .metric-value { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
+    .metric-label { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+    .m-alert .metric-value { color: var(--red); }
+    .m-good  .metric-value { color: var(--green); }
+    .m-warn  .metric-value { color: var(--yellow); }
+    .m-purple .metric-value { color: var(--purple-light); }
+
+    /* OPP CARDS */
+    .opp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 18px; margin-top: 36px; }
+    .opp-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-left: 3px solid var(--purple); border-radius: 12px; padding: 22px;
+      transition: background .3s, transform .3s;
+    }
+    .opp-card:hover { background: var(--bg3); transform: translateY(-3px); }
+    .opp-icon {
+      width: 38px; height: 38px; background: var(--purple-dim); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--purple); font-size: 15px; margin-bottom: 14px;
+    }
+    .opp-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .opp-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+    /* CHART */
+    .chart-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px 24px 24px; margin-top: 36px;
+      overflow: hidden;
+    }
+    .chart-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .chart-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .chart-subtitle { font-size: 12px; color: var(--text-muted); }
+    .chart-legend { display: flex; gap: 20px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+    .legend-dot { width: 28px; height: 3px; border-radius: 2px; }
+    .legend-dot.red    { background: var(--red); }
+    .legend-dot.purple { background: var(--purple); }
+
+    svg.chart { width: 100%; height: auto; display: block; }
+
+    /* paths animated */
+    .path-red {
+      stroke-dasharray: 800;
+      stroke-dashoffset: 800;
+      transition: stroke-dashoffset 1.8s ease .3s;
+    }
+    .path-purple {
+      stroke-dasharray: 850;
+      stroke-dashoffset: 850;
+      transition: stroke-dashoffset 1.8s ease .5s;
+    }
+    .chart-wrap.animate .path-red    { stroke-dashoffset: 0; }
+    .chart-wrap.animate .path-purple { stroke-dashoffset: 0; }
+
+    .chart-note {
+      margin-top: 16px; font-size: 11px; color: var(--text-dim);
+      text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .chart-note i { color: var(--purple); }
+
+    /* SYSTEM CARDS */
+    .system-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 16px; margin-top: 36px; }
+    .system-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 22px;
+      transition: border-color .3s, transform .3s;
+    }
+    .system-card:hover { border-color: var(--purple); transform: translateY(-3px); }
+    .system-card-icon {
+      width: 42px; height: 42px; background: var(--purple-dim);
+      border: 1px solid rgba(139,92,246,0.25); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--purple-light); font-size: 18px; margin-bottom: 16px;
+    }
+    .system-card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .system-card-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+
+    .system-tagline {
+      margin-top: 32px; background: var(--purple-dim);
+      border: 1px solid rgba(139,92,246,0.25); border-radius: 14px;
+      padding: 22px 28px; text-align: center;
+    }
+    .system-tagline p { font-size: 17px; font-weight: 700; color: var(--purple-light); line-height: 1.4; }
+    .system-tagline span { color: var(--text-muted); font-size: 13px; display: block; margin-top: 6px; }
+
+    /* IDEAS PERSONALIZADAS */
+    .ideas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin-top: 32px; }
+    .idea-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px;
+      transition: border-color .3s, transform .3s;
+    }
+    .idea-card:hover { border-color: rgba(139,92,246,0.5); transform: translateY(-3px); }
+    .idea-num {
+      font-size: 11px; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--purple); margin-bottom: 10px;
+    }
+    .idea-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+    .idea-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+
+    /* SOCIAL PROOF */
+    .proof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 16px; margin-top: 32px; }
+    .proof-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+      padding: 24px; transition: border-color .3s, transform .3s;
+    }
+    .proof-card:hover { border-color: var(--border); transform: translateY(-2px); }
+    .proof-logo {
+      width: 100%; height: 44px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px; font-size: 11px; color: var(--text-dim);
+      font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    }
+    .proof-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .proof-sector { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+    .proof-result {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+      color: var(--green); font-size: 12px; font-weight: 700;
+      padding: 5px 12px; border-radius: 100px;
+    }
+    .proof-quote { font-size: 12px; color: var(--text-muted); line-height: 1.55; margin-top: 12px; font-style: italic; }
+
+    /* CTA */
+    .cta-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 24px; padding: 60px 36px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute; bottom: -120px; right: -120px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 68%);
+      pointer-events: none;
+    }
+    .cta-title { font-size: clamp(22px,4vw,36px); font-weight: 800; margin-bottom: 14px; line-height: 1.25; }
+    .cta-subtitle { font-size: 15px; color: var(--text-muted); max-width: 460px; margin: 0 auto 34px; line-height: 1.6; }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #25d366; color: #fff; text-decoration: none;
+      font-size: 15px; font-weight: 700; padding: 16px 32px;
+      border-radius: 100px; transition: transform .2s, box-shadow .2s;
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+    .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(37,211,102,0.4); }
+    .cta-note { margin-top: 16px; font-size: 11px; color: var(--text-dim); }
+
+    footer {
+      text-align: center; padding: 40px 24px; font-size: 12px;
+      color: var(--text-dim); border-top: 1px solid var(--border);
+    }
+    footer span { color: var(--purple); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">Brannea</span>
+  <span class="nav-label">Análisis Confidencial · Eddy Vivas · Abril 2026</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><i class="fa-solid fa-chart-line"></i> Análisis de Presencia Digital</div>
+  <h1 class="hero-title"><span>Diagnóstico</span></h1>
+  <div class="hero-name">Eddy Vivas</div>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><i class="fa-brands fa-linkedin"></i> linkedin.com/in/eddyvivas</div>
+    <div class="hero-meta-item"><i class="fa-solid fa-building"></i> Brava Grupo Inmobiliario</div>
+    <div class="hero-meta-item"><i class="fa-solid fa-location-dot"></i> Lima, Perú</div>
+    <div class="hero-meta-item"><i class="fa-solid fa-calendar"></i> Abril 2026</div>
+  </div>
+  <div class="scroll-hint"><span>Ver análisis</span><div class="scroll-arrow"></div></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SNAPSHOT -->
+<div class="section-wrap">
+  <div class="reveal">
+    <div class="section-label">Snapshot</div>
+    <h2 class="section-title">Tus números hoy</h2>
+    <p class="section-subtitle">Un perfil con base real — pero con el motor completamente apagado.</p>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric-card m-good reveal"><div class="metric-icon"><i class="fa-solid fa-users"></i></div><div class="metric-value" data-target="5067">5,067</div><div class="metric-label">Seguidores LinkedIn</div></div>
+    <div class="metric-card m-alert reveal"><div class="metric-icon"><i class="fa-solid fa-file-circle-xmark"></i></div><div class="metric-value">0</div><div class="metric-label">Posts recientes</div></div>
+    <div class="metric-card m-warn reveal"><div class="metric-icon"><i class="fa-solid fa-star"></i></div><div class="metric-value">2</div><div class="metric-label">Recomendaciones</div></div>
+    <div class="metric-card m-purple reveal"><div class="metric-icon"><i class="fa-solid fa-building-columns"></i></div><div class="metric-value">3+</div><div class="metric-label">Años liderando Brava</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- OPORTUNIDADES -->
+<div class="section-wrap">
+  <div class="reveal">
+    <div class="section-label">Diagnóstico</div>
+    <h2 class="section-title">Lo que el perfil aún no está aprovechando</h2>
+    <p class="section-subtitle">Cada punto de abajo es una oportunidad de negocio que hoy está dormida.</p>
+  </div>
+  <div class="opp-grid">
+    <div class="opp-card reveal"><div class="opp-icon"><i class="fa-solid fa-bolt"></i></div><div class="opp-title">5,000 seguidores sin activar</div><div class="opp-desc">Tienes una audiencia construida. Sin contenido, esa audiencia no se convierte en oportunidades. Es como tener una sala llena de gente interesada — y no hablarles.</div></div>
+    <div class="opp-card reveal"><div class="opp-icon"><i class="fa-solid fa-id-card"></i></div><div class="opp-title">Autoridad real no comunicada</div><div class="opp-desc">Llevas más de 3 años liderando una empresa inmobiliaria en Perú. Ese expertise vale mucho — pero si el mercado no lo ve, no existe para ellos.</div></div>
+    <div class="opp-card reveal"><div class="opp-icon"><i class="fa-solid fa-funnel-dollar"></i></div><div class="opp-title">Sin sistema de conversión detrás</div><div class="opp-desc">Incluso publicando mañana, sin funnel, seguimiento y automatización el contenido no se convierte en clientes. El contenido es solo el inicio del sistema.</div></div>
+    <div class="opp-card reveal"><div class="opp-icon"><i class="fa-solid fa-video"></i></div><div class="opp-title">Formatos de alto impacto inexplorados</div><div class="opp-desc">Reels educativos, carruseles, storytelling de founder — ninguno está siendo usado. En real estate, quien enseña primero gana la confianza primero.</div></div>
+    <div class="opp-card reveal"><div class="opp-icon"><i class="fa-solid fa-pen-to-square"></i></div><div class="opp-title">Perfil que habla de empresa, no de founder</div><div class="opp-desc">Tu about habla en "nosotros". En LinkedIn conectan las personas, no los logos. El que genera confianza y atrae es el founder — no la marca corporativa.</div></div>
+    <div class="opp-card reveal"><div class="opp-icon"><i class="fa-solid fa-chart-bar"></i></div><div class="opp-title">Sector con demanda alta, competencia aún baja</div><div class="opp-desc">El real estate en Lima digital está subocupado de contenido educativo de calidad. Quien posicione primero con volumen y criterio se lleva la autoridad del sector.</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- GRÁFICO SVG -->
+<div class="section-wrap">
+  <div class="reveal">
+    <div class="section-label">Proyección</div>
+    <h2 class="section-title">Lo que pasa si nada cambia</h2>
+    <p class="section-subtitle">Una proyección real basada en tus métricas actuales.</p>
+  </div>
+
+  <div class="chart-wrap reveal" id="chartBox">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Visibilidad · Oportunidades · Crecimiento</div>
+        <div class="chart-subtitle">Proyección a 12 meses · Escala 0–100</div>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot red"></div> Si sigues como vas</div>
+        <div class="legend-item"><div class="legend-dot purple"></div> Con estrategia profesional</div>
+      </div>
+    </div>
+
+    <svg class="chart" viewBox="0 0 800 340" preserveAspectRatio="xMidYMid meet" aria-label="Gráfico de proyección">
+      <defs>
+        <linearGradient id="gradRed" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ef4444" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="gradPurple" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Grid lines -->
+      <line x1="80" y1="50"  x2="740" y2="50"  stroke="#1e1e1e" stroke-width="1"/>
+      <line x1="80" y1="118" x2="740" y2="118" stroke="#1e1e1e" stroke-width="1"/>
+      <line x1="80" y1="186" x2="740" y2="186" stroke="#1e1e1e" stroke-width="1"/>
+      <line x1="80" y1="254" x2="740" y2="254" stroke="#1e1e1e" stroke-width="1"/>
+      <line x1="80" y1="300" x2="740" y2="300" stroke="#222"    stroke-width="1.5"/>
+
+      <!-- Y axis labels -->
+      <text x="68" y="54"  text-anchor="end" fill="#444" font-size="10" font-family="Inter">100</text>
+      <text x="68" y="122" text-anchor="end" fill="#444" font-size="10" font-family="Inter">75</text>
+      <text x="68" y="190" text-anchor="end" fill="#444" font-size="10" font-family="Inter">50</text>
+      <text x="68" y="258" text-anchor="end" fill="#444" font-size="10" font-family="Inter">25</text>
+      <text x="68" y="304" text-anchor="end" fill="#444" font-size="10" font-family="Inter">0</text>
+
+      <!-- X axis month markers -->
+      <text x="80"  y="320" text-anchor="middle" fill="#555" font-size="10" font-family="Inter">Hoy</text>
+      <text x="200" y="320" text-anchor="middle" fill="#555" font-size="10" font-family="Inter">Mes 3</text>
+      <text x="380" y="320" text-anchor="middle" fill="#555" font-size="10" font-family="Inter">Mes 6</text>
+      <text x="560" y="320" text-anchor="middle" fill="#555" font-size="10" font-family="Inter">Mes 9</text>
+      <text x="740" y="320" text-anchor="middle" fill="#555" font-size="10" font-family="Inter">Mes 12</text>
+
+      <!-- "Hoy" vertical marker -->
+      <line x1="80" y1="50" x2="80" y2="300" stroke="#333" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- RED area fill (declining: starts at ~32 → falls to ~5) -->
+      <!-- y for v: y = 300 - (v/100)*250  →  v=32: y=220  v=5: y=287.5 -->
+      <path d="M 80,220 C 240,228 440,268 740,288 L 740,300 L 80,300 Z"
+            fill="url(#gradRed)"/>
+
+      <!-- PURPLE area fill (rising: starts at ~32 → rises to ~90) -->
+      <!-- v=90: y=300-225=75 -->
+      <path d="M 80,220 C 260,205 460,120 740,75 L 740,300 L 80,300 Z"
+            fill="url(#gradPurple)"/>
+
+      <!-- RED LINE -->
+      <path class="path-red"
+            d="M 80,220 C 240,228 440,268 740,288"
+            fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+
+      <!-- PURPLE LINE -->
+      <path class="path-purple"
+            d="M 80,220 C 260,205 460,120 740,75"
+            fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+
+      <!-- Start dot (shared) -->
+      <circle cx="80" cy="220" r="5" fill="#8b5cf6"/>
+      <circle cx="80" cy="220" r="9" fill="none" stroke="#8b5cf6" stroke-width="1.5" opacity="0.4"/>
+
+      <!-- End dot red -->
+      <circle cx="740" cy="288" r="5" fill="#ef4444"/>
+      <!-- End label red -->
+      <text x="748" y="292" fill="#ef4444" font-size="10" font-family="Inter" font-weight="700">−82%</text>
+
+      <!-- End dot purple -->
+      <circle cx="740" cy="75" r="5" fill="#8b5cf6"/>
+      <!-- End label purple -->
+      <text x="748" y="79" fill="#a78bfa" font-size="10" font-family="Inter" font-weight="700">+181%</text>
+
+      <!-- "Nivel actual" annotation -->
+      <text x="88" y="216" fill="#888" font-size="10" font-family="Inter">Nivel actual</text>
+    </svg>
+
+    <div class="chart-note">
+      <i class="fa-solid fa-circle-info"></i>
+      Basado en: 0 posts en últimos 90 días · 5,067 seguidores · 0% engagement activo · Sector inmobiliario Lima
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SISTEMA BRANNEA -->
+<div class="section-wrap">
+  <div class="reveal">
+    <div class="section-label">Lo que haríamos por ti</div>
+    <h2 class="section-title">Tu agencia de marketing completa.<br>Todo en uno.</h2>
+    <p class="section-subtitle">No te vendemos piezas. Te damos el sistema completo que convierte tu autoridad en clientes.</p>
+  </div>
+
+  <div class="system-grid">
+    <div class="system-card reveal">
+      <div class="system-card-icon"><i class="fa-solid fa-layer-group"></i></div>
+      <div class="system-card-title">Carruseles estratégicos</div>
+      <div class="system-card-desc">Diseño y redacción de 12 carruseles mensuales optimizados para guardar, compartir y generar inbound leads. Cada uno con estrategia detrás.</div>
+    </div>
+    <div class="system-card reveal">
+      <div class="system-card-icon"><i class="fa-solid fa-camera"></i></div>
+      <div class="system-card-title">Cobertura y eventos</div>
+      <div class="system-card-desc">Acompañamiento presencial en lanzamientos, visitas a proyectos y eventos de Brava. Convertimos cada momento en contenido de autoridad.</div>
+    </div>
+    <div class="system-card reveal">
+      <div class="system-card-icon"><i class="fa-solid fa-filter"></i></div>
+      <div class="system-card-title">Funnels de venta</div>
+      <div class="system-card-desc">Funnels completos para Instagram y LinkedIn: anuncios → historias filtro → captura de lead → seguimiento personalizado. Nada queda al azar.</div>
+    </div>
+    <div class="system-card reveal">
+      <div class="system-card-icon"><i class="fa-solid fa-people-group"></i></div>
+      <div class="system-card-title">Gestión de comunidad</div>
+      <div class="system-card-desc">Creación y activación de comunidad alrededor de tu marca. Respondemos, interactuamos y construimos la audiencia que te genera referidos.</div>
+    </div>
+    <div class="system-card reveal">
+      <div class="system-card-icon"><i class="fa-solid fa-robot"></i></div>
+      <div class="system-card-title">Automatizaciones</div>
+      <div class="system-card-desc">ManyChat, remarketing, secuencias de seguimiento y bases de datos de leads. Tus prospectos nunca quedan sin respuesta — ni de noche ni en fines de semana.</div>
+    </div>
+    <div class="system-card reveal">
+      <div class="system-card-icon"><i class="fa-solid fa-film"></i></div>
+      <div class="system-card-title">Contenido en volumen</div>
+      <div class="system-card-desc">12–15 reels mensuales + 12 carruseles + historias diarias. Producción y publicación completa. Tú grabas 2–3 horas al mes. Nosotros hacemos el resto.</div>
+    </div>
+  </div>
+
+  <div class="system-tagline reveal">
+    <p>"Somos el equipo de marketing del founder.<br>No te entregamos contenido — te construimos el motor."</p>
+    <span>IA + contenido + funnel + automatización. Todo gestionado por Brannea.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- IDEAS PERSONALIZADAS -->
+<div class="section-wrap">
+  <div class="reveal">
+    <div class="section-label">Específico para ti</div>
+    <h2 class="section-title">Ideas que ya tenemos para Brava</h2>
+    <p class="section-subtitle">Basadas en tu perfil, tu audiencia y el momento del mercado inmobiliario en Lima.</p>
+  </div>
+  <div class="ideas-grid">
+    <div class="idea-card reveal">
+      <div class="idea-num">Idea 01 · Reel serie</div>
+      <div class="idea-title">"La verdad del mercado inmobiliario en Lima que nadie te dice"</div>
+      <div class="idea-desc">Serie de 4 reels educativos que posicionan a Eddy como el referente honesto del sector. Alto potencial viral — el público de Lima está hambriento de información sin humo.</div>
+    </div>
+    <div class="idea-card reveal">
+      <div class="idea-num">Idea 02 · Carrusel</div>
+      <div class="idea-title">"¿Comprar o alquilar en Lima 2026? La respuesta con datos reales"</div>
+      <div class="idea-desc">Carrusel de decisión de alta difusión. Genera guardados masivos y posiciona a Brava en el momento exacto en que alguien está evaluando invertir.</div>
+    </div>
+    <div class="idea-card reveal">
+      <div class="idea-num">Idea 03 · Funnel</div>
+      <div class="idea-title">Automatización de WhatsApp para leads de Brava</div>
+      <div class="idea-desc">Cualquier persona que pregunte por proyectos recibe respuesta inmediata con preguntas filtro, calificación automática y agenda de reunión. Cero leads perdidos.</div>
+    </div>
+    <div class="idea-card reveal">
+      <div class="idea-num">Idea 04 · Campaña</div>
+      <div class="idea-title">Remarketing para visitantes de Brava sin contacto</div>
+      <div class="idea-desc">Campaña específica para personas que interactuaron con tu perfil o contenido sin escribirte. Recalentamiento con contenido de autoridad hasta que estén listos.</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SOCIAL PROOF -->
+<div class="section-wrap">
+  <div class="reveal">
+    <div class="section-label">Resultados reales</div>
+    <h2 class="section-title">Con quiénes hemos trabajado</h2>
+    <p class="section-subtitle">Founders que decidieron construir su sistema antes que sus competidores.</p>
+  </div>
+  <div class="proof-grid">
+    <div class="proof-card reveal">
+      <div class="proof-logo">Founder A · Fintech Lima</div>
+      <div class="proof-name">Founder Tech · Sector Fintech</div>
+      <div class="proof-sector">Lima, Perú · LinkedIn + Instagram</div>
+      <div class="proof-result"><i class="fa-solid fa-arrow-trend-up"></i> 3 clientes nuevos en 45 días</div>
+      <div class="proof-quote">"Pasé de publicar sin estrategia a tener leads llegando solos. El sistema funciona."</div>
+    </div>
+    <div class="proof-card reveal">
+      <div class="proof-logo">Founder B · SaaS B2B</div>
+      <div class="proof-name">Founder SaaS · B2B Tech</div>
+      <div class="proof-sector">Lima, Perú · LinkedIn</div>
+      <div class="proof-result"><i class="fa-solid fa-arrow-trend-up"></i> +180% inbound en 60 días</div>
+      <div class="proof-quote">"Antes nadie me contactaba. Ahora recibo 3-4 mensajes de prospectos calificados por semana."</div>
+    </div>
+    <div class="proof-card reveal">
+      <div class="proof-logo" style="border-color:rgba(34,197,94,0.3); color: var(--green);">★ Caso verificado</div>
+      <div class="proof-name">Cliente Real · Sector Tech</div>
+      <div class="proof-sector">Perú · Sistema completo Brannea</div>
+      <div class="proof-result"><i class="fa-solid fa-dollar-sign"></i> $5,000 USD en primeros 2 meses</div>
+      <div class="proof-quote">"Los 2 primeros clientes llegaron solos. El founder no hizo outreach frío ni una sola vez."</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<div class="section-wrap">
+  <div class="cta-box reveal">
+    <div class="section-label">Siguiente paso</div>
+    <h2 class="cta-title">¿Te gustaría ver cómo funcionaría<br>este sistema para Brava?</h2>
+    <p class="cta-subtitle">15 minutos. Sin compromiso. Te mostramos exactamente qué haríamos en tu caso — con ejemplos reales, no promesas.</p>
+    <a href="https://wa.me/51992124889?text=Hola%2C%20vi%20el%20an%C3%A1lisis%20de%20mi%20perfil%20y%20me%20gustar%C3%ADa%20agendar%20los%2015%20minutos." class="cta-btn" target="_blank">
+      <i class="fa-brands fa-whatsapp" style="font-size:20px;"></i>
+      Agendar 15 minutos
+    </a>
+    <p class="cta-note">No es una llamada de ventas. Es un diagnóstico real de tu caso específico.</p>
+  </div>
+</div>
+
+<footer>
+  Preparado por <span>Brannea</span> · Sistema de Adquisición de Clientes para Founders · Abril 2026
+</footer>
+
+<script>
+  // Reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Chart animation on scroll
+  const chartObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate');
+        chartObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  const chartBox = document.getElementById('chartBox');
+  if (chartBox) chartObserver.observe(chartBox);
+
+  // Animated counter for followers
+  function animateCount(el, target) {
+    let start = 0, duration = 1400, startTime = null;
+    const step = (ts) => {
+      if (!startTime) startTime = ts;
+      const p = Math.min((ts - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.floor(eased * target).toLocaleString('es-PE');
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  const counterEl = document.querySelector('[data-target]');
+  if (counterEl) {
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCount(counterEl, parseInt(counterEl.dataset.target));
+          counterObs.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    counterObs.observe(counterEl);
+  }
+</script>
+</body>
+</html>

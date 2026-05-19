@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrannIA - Sistema IA para LinkedIn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & VARIABLES ===== */
+    :root {
+      --bg: #0e0c0d;
+      --bg1: #141012;
+      --bg2: #1c1420;
+      --orange: #FF6D29;
+      --ob: rgba(255,109,41,0.3);
+      --red: #FF3D1A;
+      --gray: #9CA3AF;
+      --gray2: #6B7280;
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      background: var(--bg);
+      color: #fff;
+      font-family: var(--font);
+      overflow-x: hidden;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      background-image: radial-gradient(rgba(255,109,41,0.04) 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3 { line-height: 1.1; letter-spacing: -0.03em; }
+    h1 { font-size: clamp(1.85rem, 5.5vw, 3.3rem); font-weight: 800; }
+    h2 { font-size: clamp(1.6rem, 4vw, 2.55rem); font-weight: 800; }
+    h3 { font-size: 1rem; font-weight: 700; }
+    .accent { color: var(--orange); }
+
+    /* ===== LAYOUT ===== */
+    section { position: relative; padding: 90px 24px; overflow: hidden; }
+    .container { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+    .tc { text-align: center; }
+
+    /* ===== GRID PATTERN ===== */
+    .gp { position: relative; }
+    .gp::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,109,41,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,109,41,0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+    }
+
+    /* ===== AMBIENT GLOW SPOTS ===== */
+    .g-tr::before {
+      content: ''; position: absolute; top: -120px; right: -180px;
+      width: 750px; height: 750px;
+      background: radial-gradient(circle, rgba(255,109,41,0.12) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    .g-bl::before {
+      content: ''; position: absolute; bottom: -120px; left: -180px;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(255,80,0,0.09) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    .g-c::before {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px; height: 600px;
+      background: radial-gradient(ellipse, rgba(255,109,41,0.10) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    .g-r::before {
+      content: ''; position: absolute; top: 50%; right: -180px;
+      transform: translateY(-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(255,109,41,0.10) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    .g-l::before {
+      content: ''; position: absolute; top: 50%; left: -180px;
+      transform: translateY(-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(255,109,41,0.10) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ===== CARD SPOTLIGHT HOVER ===== */
+    .gc {
+      --mx: 50%; --my: 50%;
+      position: relative;
+      overflow: hidden;
+    }
+    .gc .spot {
+      position: absolute; inset: 0;
+      background: radial-gradient(200px circle at var(--mx) var(--my), rgba(255,109,41,0.18), transparent 65%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 1;
+      border-radius: inherit;
+    }
+    .gc:hover .spot { opacity: 1; }
+    .gc:hover { box-shadow: 0 0 0 1px rgba(255,109,41,0.3), 0 8px 40px rgba(255,109,41,0.14); }
+    .gc > *:not(.spot) { position: relative; z-index: 2; }
+
+    /* ===== BADGE ===== */
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,109,41,0.1); border: 1px solid rgba(255,109,41,0.35);
+      padding: 5px 14px; border-radius: 100px;
+      font-size: 0.75rem; font-weight: 600; color: var(--orange);
+      margin-bottom: 18px;
+    }
+    .badge-c { display: block; width: fit-content; margin: 0 auto 18px; }
+    .bdot { width: 6px; height: 6px; background: var(--orange); border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      background: linear-gradient(135deg, #FF6D29 0%, #d95520 50%, #FF6D29 100%);
+      background-size: 200% 200%;
+      color: #fff; border: none;
+      padding: 12px 28px; border-radius: 10px;
+      font-family: var(--font); font-weight: 700; font-size: 0.92rem;
+      cursor: pointer; transition: all 0.3s ease; white-space: nowrap;
+      position: relative; overflow: hidden;
+      animation: btnShift 4s ease infinite;
+    }
+    @keyframes btnShift {
+      0%,100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .btn::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
+      animation: shimmer 2.8s ease infinite;
+    }
+    @keyframes shimmer { 0%,40%{left:-100%} 100%{left:160%} }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(255,109,41,0.55), 0 0 80px rgba(255,109,41,0.18); }
+    .btn-lg { padding: 15px 36px; font-size: 1rem; }
+    .btn-w { width: 100%; }
+    @media (max-width: 900px) {
+      .hero-btn-desktop { display: none !important; }
+      .hero-btn-mobile { display: inline-flex !important; }
+    }
+
+    /* ===== HELPERS ===== */
+    .slabel { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
+    .sub { font-size: clamp(0.9rem, 2vw, 1rem); color: var(--gray); line-height: 1.75; }
+    .subnote {
+      font-size: 0.92rem; color: var(--gray2); line-height: 1.7; margin-top: 10px;
+      padding-left: 12px;
+      border-left: 2px solid rgba(255,109,41,0.55);
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 14px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      background: rgba(14,12,13,0.9);
+      border-bottom: 1px solid rgba(255,109,41,0.1);
+    }
+    .logo { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.04em; }
+    .logo span { color: var(--orange); }
+    .ncd { display: flex; align-items: center; gap: 10px; }
+    .ncd-lbl { font-size: 0.72rem; font-weight: 500; color: var(--gray); white-space: nowrap; }
+    .ncd-units { display: flex; gap: 5px; align-items: center; }
+    .ncd-u {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,109,41,0.1); border: 1px solid rgba(255,109,41,0.22);
+      border-radius: 7px; padding: 4px 7px; min-width: 34px;
+    }
+    .ncd-u span { font-size: 0.84rem; font-weight: 800; line-height: 1; color: #fff; }
+    .ncd-u small { font-size: 0.49rem; font-weight: 700; color: var(--gray2); letter-spacing: 0.04em; text-transform: uppercase; margin-top: 1px; }
+    .ncd-sep { font-weight: 800; color: var(--orange); font-size: 0.84rem; opacity: 0.7; }
+
+    /* ===== HERO ===== */
+    #hero { padding-top: 118px; min-height: 100svh; display: flex; align-items: center; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+
+    /* Mock dashboard */
+    .mock {
+      background: var(--bg2); border: 1px solid rgba(255,109,41,0.5);
+      border-radius: 16px; padding: 24px;
+      box-shadow: 0 0 100px rgba(255,109,41,0.3), 0 0 200px rgba(255,109,41,0.1), 0 0 40px rgba(255,61,26,0.08), inset 0 0 60px rgba(255,109,41,0.05);
+      animation: mockPulse 4s ease infinite;
+    }
+    @keyframes mockPulse {
+      0%,100%{box-shadow:0 0 100px rgba(255,109,41,0.3),0 0 200px rgba(255,109,41,0.1),inset 0 0 60px rgba(255,109,41,0.05)}
+      50%{box-shadow:0 0 130px rgba(255,109,41,0.45),0 0 240px rgba(255,109,41,0.15),0 0 60px rgba(255,61,26,0.12),inset 0 0 80px rgba(255,109,41,0.08)}
+    }
+    .mock-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .mock-ttl { font-size: 0.8rem; font-weight: 700; }
+    .mock-tag { background: rgba(255,109,41,0.15); border: 1px solid rgba(255,109,41,0.3); border-radius: 100px; padding: 3px 10px; font-size: 0.65rem; color: var(--orange); }
+    .mock-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 14px; }
+    .mock-m { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 9px; padding: 9px; text-align: center; }
+    .mock-v { font-size: 1.1rem; font-weight: 900; }
+    .mock-l { font-size: 0.58rem; color: var(--gray); margin-top: 1px; }
+    .mock-chart { background: rgba(0,0,0,0.3); border-radius: 9px; padding: 10px; }
+    .leg { display: flex; gap: 14px; margin-top: 7px; }
+    .leg-i { display: flex; align-items: center; gap: 5px; font-size: 0.62rem; color: var(--gray); }
+    .leg-d { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ===== PAIN SECTION ===== */
+    .pain-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 36px 0; }
+    .pain-card {
+      background: var(--bg1); border: 1px solid rgba(255,109,41,0.12);
+      border-radius: 14px; padding: 26px 22px;
+      transition: border-color 0.3s;
+    }
+    .pain-card:hover { border-color: rgba(255,109,41,0.42); }
+    .pain-num {
+      font-size: 2rem; font-weight: 800; color: var(--orange);
+      letter-spacing: -0.05em; margin-bottom: 14px; line-height: 1;
+    }
+    .pain-txt { font-size: 0.96rem; color: #ccc; line-height: 1.65; font-weight: 500; }
+    .pain-hl-txt { color: var(--red); font-weight: 700; }
+
+    /* Pain close */
+    .pain-hl-box {
+      border-radius: 16px; padding: 32px 36px; margin-top: 8px;
+      text-align: center; cursor: default;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(255,109,41,0.08) 100%);
+      border: 1px solid rgba(251,191,36,0.4);
+      box-shadow: 0 0 60px rgba(251,191,36,0.14), 0 0 120px rgba(251,191,36,0.06), inset 0 0 40px rgba(251,191,36,0.04);
+      animation: boxPulse 3s ease infinite;
+    }
+    @keyframes boxPulse {
+      0%,100%{box-shadow:0 0 60px rgba(251,191,36,0.14),0 0 120px rgba(251,191,36,0.06),inset 0 0 40px rgba(251,191,36,0.04)}
+      50%{box-shadow:0 0 90px rgba(251,191,36,0.24),0 0 160px rgba(251,191,36,0.09),inset 0 0 60px rgba(251,191,36,0.09)}
+    }
+    .pain-hl-box::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(251,191,36,0.7), rgba(251,191,36,0.9), rgba(251,191,36,0.7), transparent);
+    }
+    .pain-hl-box .spot {
+      background: radial-gradient(200px circle at var(--mx) var(--my), rgba(251,191,36,0.24), transparent 65%);
+    }
+    .pain-hl-box:hover {
+      box-shadow: 0 0 120px rgba(251,191,36,0.38), 0 0 200px rgba(251,191,36,0.14), inset 0 0 80px rgba(251,191,36,0.1) !important;
+      border-color: rgba(251,191,36,0.7);
+    }
+    .phl-inner p {
+      font-size: clamp(1.05rem, 2.3vw, 1.25rem); font-weight: 600;
+      color: #e8e0f5; line-height: 1.85;
+    }
+    .phl-inner p:first-child {
+      color: #fbbf24;
+      font-size: clamp(1.45rem, 3.2vw, 1.95rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      line-height: 1.15; margin-bottom: 14px;
+    }
+    .phl-hl { color: var(--orange); font-weight: 800; }
+
+    /* ===== HOW IT WORKS ===== */
+    .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 44px; text-align: left; }
+    .step-card {
+      background: var(--bg2); border: 1px solid rgba(255,109,41,0.18);
+      border-radius: 16px; padding: 26px 22px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .step-card:hover { border-color: rgba(255,109,41,0.5); transform: translateY(-4px); }
+    .step-n { font-size: 0.68rem; font-weight: 800; color: var(--orange); letter-spacing: 0.06em; margin-bottom: 12px; }
+    .step-t { font-size: 1rem; font-weight: 700; margin-bottom: 9px; }
+    .step-d { font-size: 0.87rem; color: var(--gray); line-height: 1.7; }
+
+    /* WhatsApp pill */
+    .wsp-line {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: #25D366; font-weight: 600;
+    }
+
+    /* HOW IT WORKS HORIZONTAL LAYOUT */
+    .hiw-layout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-top: 44px;
+      text-align: left;
+    }
+    .hiw-img {
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .hiw-img img {
+      max-width: 260px; width: 100%;
+      filter: drop-shadow(0 24px 48px rgba(0,0,0,0.65)) drop-shadow(0 0 40px rgba(255,109,41,0.06));
+    }
+    .hiw-steps {
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .wsp-demo-label {
+      font-size: 0.72rem; font-weight: 600; color: var(--gray2);
+      margin-top: 10px; letter-spacing: 0.04em; text-align: center;
+    }
+
+    /* ===== DIFERENCIAL BLOCK ===== */
+    .dif-block { margin: 28px auto 0; max-width: 560px; }
+    .dif-line { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--gray); line-height: 2; }
+    .dif-accent { color: #fff; font-weight: 700; font-size: clamp(1.05rem, 2.2vw, 1.25rem); }
+
+    /* ===== DASHBOARD SECTION ===== */
+    .dash-wrap {
+      margin: 44px auto; max-width: 700px;
+      background: var(--bg2); border: 1px solid var(--ob);
+      border-radius: 20px; padding: 30px;
+    }
+    .ax-y {
+      font-size: 0.57rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--gray); writing-mode: vertical-rl; transform: rotate(180deg);
+      flex-shrink: 0; align-self: center;
+    }
+    .ax-x { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-align: center; margin-top: 6px; }
+    .cpts { display: flex; justify-content: space-between; margin-top: 16px; }
+    .cpt { text-align: center; flex: 1; padding: 0 4px; }
+    .cpt-d { width: 9px; height: 9px; background: var(--orange); border-radius: 50%; margin: 0 auto 7px; box-shadow: 0 0 10px rgba(255,109,41,0.5); }
+    .cpt-t { font-size: 0.72rem; font-weight: 700; margin-bottom: 3px; }
+    .cpt-s { font-size: 0.62rem; color: var(--gray); line-height: 1.4; }
+    .dash-cap { max-width: 540px; margin: 0 auto; font-size: 0.93rem; color: var(--gray); line-height: 1.75; }
+    .dash-cap strong { color: #fff; }
+    .dash-cap .hl { color: var(--orange); font-weight: 700; }
+
+    /* ===== BENEFITS ===== */
+    .ben-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-top: 44px; text-align: left; }
+    .ben-card {
+      background: var(--bg1); border: 1px solid rgba(255,109,41,0.12);
+      border-radius: 14px; padding: 22px; display: flex; gap: 16px; align-items: flex-start;
+      transition: border-color 0.3s;
+    }
+    .ben-card:hover { border-color: rgba(255,109,41,0.4); }
+    .b-icon {
+      width: 50px; height: 50px; flex-shrink: 0;
+      background: rgba(255,109,41,0.12); border: 1px solid rgba(255,109,41,0.28);
+      border-radius: 13px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem;
+    }
+    .b-lbl { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
+    .b-t { font-size: 0.93rem; font-weight: 700; margin-bottom: 5px; line-height: 1.3; }
+    .b-d { font-size: 0.83rem; color: var(--gray); line-height: 1.6; }
+
+    /* ===== ONBOARDING ===== */
+    .ob-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-top: 44px; position: relative; }
+    .ob-grid::before {
+      content: ''; position: absolute; top: 26px; left: 12%; right: 12%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,109,41,0.3), rgba(255,109,41,0.3), transparent);
+      z-index: 0;
+    }
+    .ob-step {
+      background: var(--bg2); border: 1px solid rgba(255,109,41,0.18);
+      border-radius: 14px; padding: 22px 18px; position: relative; z-index: 1;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+    .ob-step::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(180px circle at 50% 50%, rgba(251,191,36,0.11), transparent 70%);
+      opacity: 0; transition: opacity 0.3s ease;
+      pointer-events: none; border-radius: inherit;
+    }
+    .ob-step:hover { border-color: rgba(251,191,36,0.35); box-shadow: 0 0 32px rgba(251,191,36,0.09); }
+    .ob-step:hover::after { opacity: 1; }
+    .ob-n {
+      width: 28px; height: 28px; background: rgba(255,109,41,0.12); border: 1px solid rgba(255,109,41,0.38);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 800; color: var(--orange); margin-bottom: 12px;
+    }
+    .ob-t { font-size: 0.87rem; font-weight: 700; margin-bottom: 7px; }
+    .ob-d { font-size: 0.8rem; color: var(--gray); line-height: 1.6; }
+
+    /* ===== PRICING ===== */
+    .pcd {
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      margin-bottom: 44px; flex-wrap: wrap;
+    }
+    .pcd-lbl { font-size: 0.84rem; font-weight: 600; color: var(--gray); white-space: nowrap; }
+    .pcd-units { display: flex; gap: 8px; align-items: center; }
+    .pcd-u {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,109,41,0.12); border: 1px solid rgba(255,109,41,0.35);
+      border-radius: 10px; padding: 10px 14px; min-width: 58px;
+    }
+    .pcd-u span { font-size: 1.75rem; font-weight: 800; line-height: 1; color: #fff; letter-spacing: -0.03em; }
+    .pcd-u small { font-size: 0.57rem; font-weight: 700; color: var(--gray2); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 3px; }
+    .pcd-sep { font-size: 1.4rem; font-weight: 800; color: var(--orange); opacity: 0.7; }
+
+    .pr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 8px; }
+    .pr-card {
+      background: linear-gradient(135deg, #130f12 0%, #0f0d10 100%);
+      border: 1px solid rgba(255,109,41,0.22);
+      border-radius: 20px; padding: 32px 28px; position: relative;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .pr-card:hover { border-color: rgba(255,109,41,0.5); box-shadow: 0 0 48px rgba(255,109,41,0.15); }
+    .pr-card.feat {
+      border-color: rgba(255,109,41,0.58);
+      background: linear-gradient(135deg, #1e1018 0%, #170e14 100%);
+      box-shadow: 0 0 60px rgba(255,109,41,0.2), inset 0 0 40px rgba(255,109,41,0.05);
+    }
+    .pr-card.feat::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--orange), var(--red), var(--orange), transparent);
+      border-radius: 20px 20px 0 0; z-index: 3;
+    }
+    .pr-badge {
+      display: inline-flex; background: rgba(255,109,41,0.12); border: 1px solid rgba(255,109,41,0.35);
+      border-radius: 100px; padding: 4px 12px; font-size: 0.68rem; font-weight: 700; color: var(--orange); margin-bottom: 16px;
+    }
+    .pr-name { font-size: 0.92rem; font-weight: 700; color: var(--gray); margin-bottom: 5px; }
+    .pr-before { font-size: 0.85rem; color: #555; text-decoration: line-through; margin-bottom: 3px; }
+    .pr-price { font-size: clamp(2.1rem, 5vw, 2.75rem); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 4px; }
+    .pr-price small { font-size: 0.95rem; color: var(--gray); font-weight: 400; letter-spacing: 0; }
+    .pr-desc { font-size: 0.83rem; color: var(--gray); margin-bottom: 22px; line-height: 1.6; }
+    .pr-feats { list-style: none; margin-bottom: 22px; }
+    .pr-feats li { font-size: 0.85rem; color: var(--gray); padding: 6px 0; display: flex; gap: 9px; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .pr-feats li:last-child { border-bottom: none; }
+    .ck { color: var(--orange); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    /* Bonus */
+    .bonus {
+      background: rgba(255,109,41,0.06);
+      border: 1px solid rgba(255,109,41,0.38);
+      border-radius: 16px; padding: 28px 32px;
+      margin: 28px auto 0; max-width: 700px;
+      box-shadow: 0 0 40px rgba(255,109,41,0.10), inset 0 0 40px rgba(255,109,41,0.03);
+      text-align: center;
+    }
+    .bonus-lbl {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .bonus-lbl::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--orange); border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
+    .bonus-t { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 8px; line-height: 1.3; }
+    .bonus-d { font-size: 0.93rem; color: #c8bfd8; line-height: 1.7; }
+    .urgency { margin-top: 20px; font-size: 1rem; font-weight: 600; color: var(--gray); text-align: center; }
+    .urgency strong { color: var(--orange); font-size: 1.05rem; }
+
+    /* ===== FAQ ===== */
+    .faq-list { margin-top: 44px; text-align: left; }
+    .faq-item {
+      background: var(--bg1); border: 1px solid rgba(255,109,41,0.12);
+      border-radius: 12px; margin-bottom: 9px; overflow: hidden; transition: border-color 0.3s;
+    }
+    .faq-item:hover, .faq-item.open { border-color: rgba(255,109,41,0.36); }
+    .faq-q {
+      padding: 18px 22px; font-size: 0.92rem; font-weight: 700; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; user-select: none;
+    }
+    .faq-q::after { content: '+'; font-size: 1.2rem; color: var(--orange); transition: transform 0.3s; flex-shrink: 0; }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s;
+      font-size: 0.87rem; color: var(--gray); line-height: 1.75; padding: 0 22px;
+    }
+    .faq-item.open .faq-a { max-height: 200px; padding: 0 22px 18px; }
+
+    /* ===== FOOTER ===== */
+    #fcta { text-align: center; padding-bottom: 60px; }
+    footer { border-top: 1px solid rgba(255,109,41,0.08); padding: 22px; text-align: center; font-size: 0.76rem; color: #444; }
+
+    /* ===== WHATSAPP FLOAT ===== */
+    .wa {
+      position: fixed; bottom: 28px; right: 24px; z-index: 200;
+      width: 58px; height: 58px; background: #25D366; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      transition: all 0.3s ease;
+    }
+    .wa:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(37,211,102,0.6); }
+    .wa svg { width: 28px; height: 28px; fill: #fff; flex-shrink: 0; }
+    .wa-tip {
+      position: absolute; right: 70px; background: #fff; color: #111;
+      padding: 7px 14px; border-radius: 100px; font-size: 0.78rem; font-weight: 600;
+      white-space: nowrap; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .wa:hover .wa-tip { opacity: 1; }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .fu { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fu.in { opacity: 1; transform: translateY(0); }
+    .d1{transition-delay:0.07s} .d2{transition-delay:0.14s} .d3{transition-delay:0.21s}
+    .d4{transition-delay:0.28s} .d5{transition-delay:0.35s} .d6{transition-delay:0.42s}
+    .la { stroke-dasharray: 900; stroke-dashoffset: 900; transition: stroke-dashoffset 2s ease; }
+    .la.go { stroke-dashoffset: 0; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+      #hero { padding-top: 100px; min-height: auto; padding-bottom: 64px; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .hiw-layout { grid-template-columns: 1fr; gap: 28px; }
+      .hiw-img { order: 2; margin: 0 auto; }
+      .hiw-steps { order: 1; }
+      .ob-grid { grid-template-columns: 1fr 1fr; }
+      .ob-grid::before { display: none; }
+    }
+    @media (max-width: 700px) {
+      section { padding: 64px 18px; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .ben-grid { grid-template-columns: 1fr; }
+      .pr-grid { grid-template-columns: 1fr; }
+      nav { padding: 12px 16px; }
+      .ncd-lbl { display: none; }
+      .ncd-u { min-width: 26px; padding: 3px 5px; }
+      .ncd-u span { font-size: 0.72rem; }
+      .ncd-u small { display: none; }
+      .ncd-sep { font-size: 0.72rem; }
+      .pain-hl-box { padding: 24px 20px; }
+    }
+    @media (max-width: 480px) {
+      section { padding: 52px 16px; }
+      .ob-grid { grid-template-columns: 1fr; }
+      .pcd-u span { font-size: 1.35rem; }
+      .pcd-u { min-width: 46px; padding: 8px 9px; }
+      .wa { bottom: 20px; right: 16px; width: 52px; height: 52px; }
+      .wa svg { width: 24px; height: 24px; }
+      h1 { letter-spacing: -0.02em; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Brann<span>IA</span></div>
+  <div class="ncd">
+    <span class="ncd-lbl">Termina en:</span>
+    <div class="ncd-units">
+      <div class="ncd-u"><span id="nd">07</span><small>días</small></div>
+      <span class="ncd-sep">:</span>
+      <div class="ncd-u"><span id="nh">00</span><small>hrs</small></div>
+      <span class="ncd-sep">:</span>
+      <div class="ncd-u"><span id="nm">00</span><small>min</small></div>
+      <span class="ncd-sep">:</span>
+      <div class="ncd-u"><span id="ns">00</span><small>seg</small></div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="g-tr g-bl">
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- Texto -->
+      <div class="fu">
+        <div class="badge"><span class="bdot"></span>Sistema IA para LinkedIn</div>
+        <h1>Consigue clientes en LinkedIn con tu sistema de <span class="accent">análisis IA</span> 100% personalizado</h1>
+        <p class="sub" style="margin-top:18px">
+          BrannIA genera dashboards personalizados para tus prospectos con proyecciones que muestran dónde están hoy y cuánto podrían crecer contigo.
+        </p>
+        <p class="subnote" style="margin-bottom:32px">
+          Así empiezas conversaciones con valor y no llegas como el típico vendedor.
+        </p>
+        <a href="#precios" class="btn btn-lg hero-btn-desktop">Quiero mi sistema ahora &rarr;</a>
+      </div>
+
+      <!-- Mock dashboard -->
+      <div class="fu d2">
+        <div class="mock gp gc">
+          <div class="spot"></div>
+          <div class="mock-head">
+            <div class="mock-ttl">BrannIA Dashboard</div>
+            <div class="mock-tag">Análisis IA</div>
+          </div>
+          <div class="mock-metrics">
+            <div class="mock-m"><div class="mock-v" style="color:#FF6D29">+340%</div><div class="mock-l">Crecimiento potencial</div></div>
+            <div class="mock-m"><div class="mock-v" style="color:#FF4500">87/100</div><div class="mock-l">Score de perfil</div></div>
+            <div class="mock-m"><div class="mock-v" style="color:#FF6D29">3.2x</div><div class="mock-l">Impacto estimado</div></div>
+          </div>
+          <div class="mock-chart">
+            <svg width="100%" height="115" viewBox="0 0 340 115" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FF6D29" stop-opacity="0.22"/>
+                  <stop offset="100%" stop-color="#FF6D29" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="28" x2="340" y2="28" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <line x1="0" y1="56" x2="340" y2="56" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <line x1="0" y1="84" x2="340" y2="84" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <path d="M0,48 C60,52 130,63 200,75 C260,85 300,92 340,98"
+                    fill="none" stroke="#ef4444" stroke-width="1.8" class="la" id="hR"/>
+              <path id="hA" d="M0,90 C60,84 130,68 200,50 C260,34 300,21 340,11 L340,115 L0,115 Z"
+                    fill="url(#hg)" opacity="0"/>
+              <path d="M0,90 C60,84 130,68 200,50 C260,34 300,21 340,11"
+                    fill="none" stroke="#FF6D29" stroke-width="2.5" class="la" id="hP"/>
+              <path d="M0,90 C60,84 130,68 200,50 C260,34 300,21 340,11"
+                    fill="none" stroke="#FF6D29" stroke-width="8" opacity="0.12" class="la" id="hPg"/>
+              <circle cx="340" cy="11" r="4" fill="#FF6D29" id="hDp" opacity="0"/>
+              <circle cx="340" cy="98" r="3" fill="#ef4444" id="hDr" opacity="0"/>
+            </svg>
+            <div class="leg">
+              <div class="leg-i"><div class="leg-d" style="background:#ef4444"></div>Sin sistema</div>
+              <div class="leg-i"><div class="leg-d" style="background:#FF6D29"></div>Con BrannIA</div>
+            </div>
+          </div>
+        </div>
+        <a href="#precios" class="btn btn-lg hero-btn-mobile" style="margin-top:24px;width:100%;display:none">Quiero mi sistema ahora &rarr;</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DOLOR -->
+<section id="dolor" class="g-c">
+  <div class="container">
+    <div class="fu">
+      <div class="badge"><span class="bdot"></span>¿Te suena familiar?</div>
+      <h2>¿Cansado de mandar mensajes <span class="accent">sin resultados?</span></h2>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card gc fu d1">
+        <div class="spot"></div>
+        <div class="pain-num">01</div>
+        <p class="pain-txt">Escribes el mismo mensaje a 10 personas y <span class="pain-hl-txt">nadie te responde.</span></p>
+      </div>
+      <div class="pain-card gc fu d2">
+        <div class="spot"></div>
+        <div class="pain-num">02</div>
+        <p class="pain-txt">Tu "Hola, soy Pepito, contrátame..." <span class="pain-hl-txt">se pierde entre otros 50 iguales.</span></p>
+      </div>
+      <div class="pain-card gc fu d3">
+        <div class="spot"></div>
+        <div class="pain-num">03</div>
+        <p class="pain-txt">Tus prospectos ya están cansados de <span class="pain-hl-txt">mensajes genéricos.</span></p>
+      </div>
+    </div>
+    <div class="pain-hl-box gc fu" id="painBox">
+      <div class="spot"></div>
+      <div class="phl-inner">
+        <p>Con BrannIA, eso acabó.</p>
+        <p>Tu primer contacto entregará valor.</p>
+        <p>Y desde hoy, tu <span class="phl-hl">conversación empezará diferente.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona" class="g-r tc">
+  <div class="container">
+    <div class="fu">
+      <div class="badge badge-c"><span class="bdot"></span>¿Cómo funciona BrannIA?</div>
+      <h2>Tan simple que da miedo <span class="accent">lo que hace</span></h2>
+      <p class="sub" style="max-width:480px;margin:14px auto 0">
+        Tres pasos. Sin herramientas complicadas.<br>
+        <span class="wsp-line">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Directo desde WhatsApp.
+        </span>
+      </p>
+    </div>
+    <div class="hiw-layout fu">
+      <div class="hiw-img">
+        <img src="avance/992ec909-9198-4142-980b-282ba1cc54af.png" alt="Así funciona el bot de BrannIA en WhatsApp" loading="lazy">
+        <p class="wsp-demo-label">Así se ve en tu WhatsApp</p>
+      </div>
+      <div class="hiw-steps">
+        <div class="step-card gp gc">
+          <div class="spot"></div>
+          <div class="step-n">PASO 01</div>
+          <h3 class="step-t">Tú mandas el link</h3>
+          <p class="step-d">Escríbele al bot de BrannIA por WhatsApp y pega el perfil de LinkedIn de tu prospecto. Nada más.</p>
+        </div>
+        <div class="step-card gp gc">
+          <div class="spot"></div>
+          <div class="step-n">PASO 02</div>
+          <h3 class="step-t">La IA analiza todo</h3>
+          <p class="step-d">BrannIA analiza su experiencia, sector, logros, señales clave y puntos de entrada para tu propuesta. En minutos.</p>
+        </div>
+        <div class="step-card gp gc">
+          <div class="spot"></div>
+          <div class="step-n">PASO 03</div>
+          <h3 class="step-t">Tú llegas con ventaja</h3>
+          <p class="step-d">Recibes un dashboard con gráficos y proyecciones reales. Se lo mandas al prospecto y la conversación empieza con interés, no con rechazo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<section id="beneficios" class="g-r tc">
+  <div class="container">
+    <div class="fu">
+      <h2>¿Por qué BrannIA <span class="accent">cambia cómo consigues</span> clientes?</h2>
+    </div>
+    <div class="ben-grid">
+      <div class="ben-card gc fu d1">
+        <div class="spot"></div>
+        <div class="b-icon">📈</div>
+        <div>
+          <div class="b-lbl">Conversión y apertura</div>
+          <div class="b-t">Más cierres desde el primer mensaje</div>
+          <div class="b-d">El análisis hace que tu prospecto perciba tiempo, interés y personalización detrás del mensaje, no otro pitch copiado.</div>
+        </div>
+      </div>
+      <div class="ben-card gc fu d2">
+        <div class="spot"></div>
+        <div class="b-icon">💬</div>
+        <div>
+          <div class="b-lbl">Simplicidad y entrega</div>
+          <div class="b-t">No necesitas aprender otra herramienta</div>
+          <div class="b-d">Todo funciona desde WhatsApp. Pegas el perfil de LinkedIn y recibes el análisis listo para enviar.</div>
+        </div>
+      </div>
+      <div class="ben-card gc fu d3">
+        <div class="spot"></div>
+        <div class="b-icon">⚡</div>
+        <div>
+          <div class="b-lbl">Eficiencia</div>
+          <div class="b-t">La IA trabaja. Tú cierras.</div>
+          <div class="b-d">BrannIA hace el análisis en minutos. Tú te enfocas en lo único que importa: la conversación.</div>
+        </div>
+      </div>
+      <div class="ben-card gc fu d4">
+        <div class="spot"></div>
+        <div class="b-icon">📊</div>
+        <div>
+          <div class="b-lbl">Volumen</div>
+          <div class="b-t">Múltiples análisis diarios sin esfuerzo</div>
+          <div class="b-d">Genera múltiples análisis diarios sin volver a escribir mensajes desde cero para cada persona y sin perder tiempo.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ONBOARDING -->
+<section id="onboarding" class="g-l tc">
+  <div class="container">
+    <div class="fu">
+      <div class="badge badge-c"><span class="bdot"></span>El proceso</div>
+      <h2>Tu sistema listo para <span class="accent">prospectar en 24 horas</span></h2>
+      <p class="sub" style="max-width:460px;margin:14px auto 0">Todo el setup lo hacemos nosotros. Tu único trabajo es mostrarte a la reunión de 30 minutos.</p>
+    </div>
+    <div class="ob-grid">
+      <div class="ob-step gp gc fu d1">
+        <div class="spot"></div>
+        <div class="ob-n">1</div>
+        <div class="ob-t">Confirmación inmediata</div>
+        <p class="ob-d">Al pagar recibes un mensaje directo a tu WhatsApp con los siguientes pasos. Sin esperar.</p>
+      </div>
+      <div class="ob-step gp gc fu d2">
+        <div class="spot"></div>
+        <div class="ob-n">2</div>
+        <div class="ob-t">Reunión de setup de 30 minutos</div>
+        <p class="ob-d">Nos juntamos para entender tu oferta, nicho y tipo de prospecto. Así personalizamos los análisis para que se alineen a tu servicio.</p>
+      </div>
+      <div class="ob-step gp gc fu d3">
+        <div class="spot"></div>
+        <div class="ob-n">3</div>
+        <div class="ob-t">Tu sistema listo en 24 horas</div>
+        <p class="ob-d">Nosotros armamos todo. Al día siguiente ya puedes prospectar con ventaja.</p>
+      </div>
+      <div class="ob-step gp gc fu d4">
+        <div class="spot"></div>
+        <div class="ob-n">4</div>
+        <div class="ob-t">Envía tu primer perfil al bot</div>
+        <p class="ob-d">Pega el LinkedIn de tu prospecto en WhatsApp y recibe tu primer análisis completo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD DIFERENCIAL -->
+<section id="dashboard" class="g-c tc">
+  <div class="container">
+    <div class="fu">
+      <div class="badge badge-c"><span class="bdot"></span>¿Por qué pagar?</div>
+      <h2>Cada análisis puede abrir una conversación que <span class="accent">normalmente sería ignorada</span></h2>
+      <p class="sub" style="max-width:580px;margin:18px auto 0">La mayoría intenta vender desde el primer mensaje.</p>
+    </div>
+    <div class="dif-block fu">
+      <p class="dif-line">BrannIA cambia el enfoque:</p>
+      <p class="dif-line dif-accent">primero entregas valor, luego presentas tu propuesta.</p>
+      <p class="dif-line">Por eso las conversaciones empiezan diferente.</p>
+    </div>
+
+    <div class="dash-wrap gp gc fu" style="margin-top:48px">
+      <div class="spot"></div>
+      <div style="display:flex;gap:12px;align-items:stretch;position:relative;z-index:2">
+        <div class="ax-y">IMPACTO EN TU PROSPECTO</div>
+        <div style="flex:1">
+          <svg id="dSvg" width="100%" height="185" viewBox="0 0 600 185">
+            <defs>
+              <linearGradient id="dg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FF6D29" stop-opacity="0.22"/>
+                <stop offset="100%" stop-color="#FF6D29" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="37" x2="600" y2="37" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="0" y1="74" x2="600" y2="74" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="0" y1="111" x2="600" y2="111" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="0" y1="148" x2="600" y2="148" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="200" y1="0" x2="200" y2="185" stroke="rgba(255,109,41,0.07)" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="400" y1="0" x2="400" y2="185" stroke="rgba(255,109,41,0.07)" stroke-width="1" stroke-dasharray="4,4"/>
+            <path d="M0,68 C100,78 200,102 300,122 C400,140 500,152 600,158"
+                  fill="none" stroke="#ef4444" stroke-width="2" class="la" id="dR" opacity="0.75"/>
+            <path id="dA" d="M0,158 C100,144 200,116 300,80 C400,48 500,22 600,10 L600,185 L0,185 Z"
+                  fill="url(#dg)" opacity="0"/>
+            <path d="M0,158 C100,144 200,116 300,80 C400,48 500,22 600,10"
+                  fill="none" stroke="#FF6D29" stroke-width="2.5" class="la" id="dP"/>
+            <path d="M0,158 C100,144 200,116 300,80 C400,48 500,22 600,10"
+                  fill="none" stroke="#FF6D29" stroke-width="9" opacity="0.1" class="la" id="dG"/>
+            <circle cx="118" cy="133" r="5" fill="#FF6D29" id="dm1" opacity="0"/>
+            <circle cx="314" cy="76" r="5" fill="#FF6D29" id="dm2" opacity="0"/>
+            <circle cx="516" cy="18" r="5" fill="#FF6D29" id="dm3" opacity="0"/>
+          </svg>
+          <div class="ax-x">LO QUE RECIBE</div>
+        </div>
+      </div>
+      <div class="leg" style="justify-content:center;gap:20px;margin-top:10px;position:relative;z-index:2">
+        <div class="leg-i"><div class="leg-d" style="background:#ef4444"></div>Sin sistema</div>
+        <div class="leg-i"><div class="leg-d" style="background:#FF6D29"></div>Con BrannIA</div>
+      </div>
+      <div class="cpts" style="position:relative;z-index:2;margin-top:20px">
+        <div class="cpt"><div class="cpt-d"></div><div class="cpt-t">Perfil analizado</div><div class="cpt-s">Experiencia, sector y rol actual</div></div>
+        <div class="cpt"><div class="cpt-d"></div><div class="cpt-t">Oportunidades detectadas</div><div class="cpt-s">Puntos de entrada para tu propuesta</div></div>
+        <div class="cpt"><div class="cpt-d"></div><div class="cpt-t">Dashboard completo</div><div class="cpt-s">Gráficos, señales clave y proyección lista para enviar</div></div>
+      </div>
+    </div>
+    <p class="dash-cap fu" style="margin-top:24px">
+      Tu prospecto ve dos curvas: cómo va hoy y cómo iría contigo. <strong>Se cierra solo.</strong> <span class="hl">BrannIA lo hizo en minutos.</span>
+    </p>
+  </div>
+</section>
+
+<!-- PRECIOS -->
+<section id="precios" class="g-c tc">
+  <div class="container">
+    <div class="fu">
+      <div class="badge badge-c"><span class="bdot"></span>Acceso</div>
+      <h2>Este precio <span class="accent">no dura para siempre</span></h2>
+      <p class="sub" style="max-width:520px;margin:14px auto 0">BrannIA está en lanzamiento. Los primeros cupos tienen precio especial. Cuando lleguemos a los primeros 20 clientes, el precio sube a $149/mes y no baja.</p>
+    </div>
+
+    <div class="pcd fu">
+      <span class="pcd-lbl">La oferta termina en:</span>
+      <div class="pcd-units">
+        <div class="pcd-u"><span id="pd">07</span><small>días</small></div>
+        <span class="pcd-sep">:</span>
+        <div class="pcd-u"><span id="ph">00</span><small>horas</small></div>
+        <span class="pcd-sep">:</span>
+        <div class="pcd-u"><span id="pm">00</span><small>min</small></div>
+        <span class="pcd-sep">:</span>
+        <div class="pcd-u"><span id="ps">00</span><small>seg</small></div>
+      </div>
+    </div>
+
+    <div class="pr-grid">
+      <div class="pr-card gp gc fu d1">
+        <div class="spot"></div>
+        <div class="pr-name">Plan mensual</div>
+        <div class="pr-before">Antes $149/mes</div>
+        <div class="pr-price">$67 <small>/mes</small></div>
+        <p class="pr-desc">Acceso completo al sistema, soporte y hasta 5 análisis diarios.</p>
+        <ul class="pr-feats">
+          <li><span class="ck">&#10003;</span>Hasta 5 prospectos analizados por día</li>
+          <li><span class="ck">&#10003;</span>Dashboard con gráficos para cada prospecto</li>
+          <li><span class="ck">&#10003;</span>Link directo listo para compartir</li>
+          <li><span class="ck">&#10003;</span>Soporte vía WhatsApp</li>
+        </ul>
+        <a href="#" class="btn btn-lg btn-w">Acceder por $67/mes &rarr;</a>
+      </div>
+      <div class="pr-card feat gp gc fu d2">
+        <div class="spot"></div>
+        <div class="pr-badge">Te regalamos $50 &middot; Mejor valor</div>
+        <div class="pr-name">Plan trimestral</div>
+        <div class="pr-before">Antes $447</div>
+        <div class="pr-price">$150 <small>/3 meses</small></div>
+        <p class="pr-desc">Tres meses completos con $50 de regalo incluidos. El mejor valor de lanzamiento.</p>
+        <ul class="pr-feats">
+          <li><span class="ck">&#10003;</span>Hasta 8 prospectos analizados por día</li>
+          <li><span class="ck">&#10003;</span>Dashboard con gráficos para cada prospecto</li>
+          <li><span class="ck">&#10003;</span>Link directo listo para compartir</li>
+          <li><span class="ck">&#10003;</span>1 reunión mensual personalizada incluida</li>
+          <li><span class="ck">&#10003;</span>Prioridad en soporte y onboarding</li>
+        </ul>
+        <a href="#" class="btn btn-lg btn-w">Acceder por $150 los 3 meses &rarr;</a>
+      </div>
+    </div>
+
+    <div class="bonus fu">
+      <div class="bonus-lbl">&#127873; Bonus incluido en los primeros cupos</div>
+      <div class="bonus-t">Nuestras mejores plantillas de mensaje de apertura</div>
+      <p class="bonus-d">Listas para copiar, pegar y enviar en LinkedIn sin sonar a bot ni a vendedor desesperado.</p>
+    </div>
+
+    <p class="urgency fu">Solo para los primeros 20 clientes. <strong>Después el precio vuelve a $149/mes.</strong></p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="g-l tc">
+  <div class="container">
+    <div class="fu">
+      <h2>Preguntas <span class="accent">frecuentes</span></h2>
+    </div>
+    <div class="faq-list fu">
+      <div class="faq-item">
+        <div class="faq-q">¿Necesito LinkedIn Premium o Sales Navigator?</div>
+        <div class="faq-a">No. Prospectas como siempre. BrannIA aumenta tus probabilidades con análisis que nadie más tiene. Tú pones el perfil, nosotros ponemos la inteligencia.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Cuántos prospectos puedo analizar por día?</div>
+        <div class="faq-a">En el plan mensual puedes analizar hasta 5 prospectos por día. En el plan trimestral hasta 8 por día, cada uno con gráficos, datos procesados y contexto real del perfil.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Los análisis se personalizan según mi servicio?</div>
+        <div class="faq-a">Sí. En la reunión de setup configuramos BrannIA según tu nicho, oferta y tipo de prospecto para que los análisis estén alineados a tu propuesta.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Cómo recibo el dashboard?</div>
+        <div class="faq-a">Desde WhatsApp como un link directo que tu prospecto abre desde donde quiera. Sin descargas, sin adjuntos. Lo copias, lo pegas en LinkedIn y listo.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Hay devoluciones?</div>
+        <div class="faq-a">No hay devoluciones porque el sistema se configura y activa manualmente para ti en 24 horas. Si tienes dudas antes de pagar, escríbenos, te explicamos todo sin compromiso.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Funciona para cualquier nicho?</div>
+        <div class="faq-a">Si tu prospecto tiene perfil en LinkedIn, BrannIA lo analiza. Coaches, agentes de seguros, consultores, inmobiliarios: el sistema se adapta a tu mercado.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section id="fcta" class="g-c">
+  <div class="container">
+    <div class="fu">
+      <h2>Empieza a prospectar con <span class="accent">ventaja hoy</span></h2>
+      <p class="sub" style="max-width:420px;margin:16px auto 28px">Los primeros 20 cupos tienen precio de lanzamiento. Después sube.</p>
+      <a href="#precios" class="btn btn-lg">Quiero mi sistema ahora &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 BrannIA. Todos los derechos reservados.</p>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a class="wa" href="https://wa.me/51992124889?text=Hola%2C%20quiero%20saber%20m%C3%A1s%20sobre%20BrannIA" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+  <div class="wa-tip">Escríbenos al WhatsApp</div>
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+  /* ====== COUNTDOWN ====== */
+  const DL = new Date('2026-05-14T04:59:59Z');
+  function updCD() {
+    let diff = Math.max(0, DL - new Date()) / 1000;
+    const d = Math.floor(diff / 86400); diff %= 86400;
+    const h = Math.floor(diff / 3600); diff %= 3600;
+    const m = Math.floor(diff / 60);
+    const s = Math.floor(diff % 60);
+    const f = n => String(n).padStart(2, '0');
+    document.getElementById('nd').textContent = f(d);
+    document.getElementById('nh').textContent = f(h);
+    document.getElementById('nm').textContent = f(m);
+    document.getElementById('ns').textContent = f(s);
+    document.getElementById('pd').textContent = f(d);
+    document.getElementById('ph').textContent = f(h);
+    document.getElementById('pm').textContent = f(m);
+    document.getElementById('ps').textContent = f(s);
+  }
+  updCD(); setInterval(updCD, 1000);
+
+  /* ====== SCROLL FADE-IN ====== */
+  const sObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); sObs.unobserve(e.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -28px 0px' });
+  document.querySelectorAll('.fu').forEach(el => sObs.observe(el));
+
+  /* ====== CARD SPOTLIGHT ====== */
+  document.querySelectorAll('.gc').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  /* ====== SVG LINE ANIMATIONS ====== */
+  function anim(ids, delay) {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) setTimeout(() => el.classList.add('go'), delay);
+    });
+  }
+  const hObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        anim(['hR'], 400); anim(['hP', 'hPg'], 700);
+        setTimeout(() => {
+          const a = document.getElementById('hA'); if (a) { a.style.transition = 'opacity 1s ease 0.7s'; a.style.opacity = '1'; }
+          const dp = document.getElementById('hDp'); if (dp) { dp.style.transition = 'opacity 0.3s ease 1.8s'; dp.style.opacity = '1'; }
+          const dr = document.getElementById('hDr'); if (dr) { dr.style.transition = 'opacity 0.3s ease 1.6s'; dr.style.opacity = '1'; }
+        }, 0);
+        hObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  const hMock = document.querySelector('.mock');
+  if (hMock) hObs.observe(hMock);
+
+  const dObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        anim(['dR'], 200); anim(['dP', 'dG'], 500);
+        setTimeout(() => {
+          const a = document.getElementById('dA'); if (a) { a.style.transition = 'opacity 1.2s ease 0.5s'; a.style.opacity = '1'; }
+          ['dm1','dm2','dm3'].forEach((id, i) => {
+            const d = document.getElementById(id);
+            if (d) { d.style.transition = `opacity 0.4s ease ${1.2 + i * 0.2}s`; d.style.opacity = '1'; }
+          });
+        }, 0);
+        dObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  const dSvg = document.getElementById('dSvg');
+  if (dSvg) dObs.observe(dSvg);
+
+  /* ====== FAQ ====== */
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!open) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>

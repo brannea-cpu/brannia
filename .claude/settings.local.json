@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"c:\\\\Users\\\\Usuario\\\\Desktop\\\\Develop Claude\\\\brannIA\\\\referencias\\\\NEW\" /b)"
+    ]
+  }
+}
