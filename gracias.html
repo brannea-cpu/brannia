@@ -153,8 +153,24 @@
     /* ── SPINNER (while sending) ── */
     #sendStatus { font-size: 0.75rem; color: var(--gray); margin-top: 10px; min-height: 18px; }
 
+    /* ── SETUP INFO CARD ── */
+    .setup-card {
+      background: rgba(168,85,247,0.06); border: 1.5px solid rgba(168,85,247,0.22);
+      border-radius: 16px; padding: 24px 28px; width: 100%; text-align: left;
+      margin-bottom: 28px;
+    }
+    .setup-card-title {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.09em;
+      color: var(--purple); text-transform: uppercase; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .setup-card ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .setup-card li { display: flex; align-items: flex-start; gap: 9px; font-size: 0.82rem; color: var(--gray); line-height: 1.5; }
+    .setup-card li::before { content: '→'; color: var(--purple); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
     @media (max-width: 520px) {
       .steps-card { padding: 20px 16px; }
+      .setup-card { padding: 18px 16px; }
       .page { padding: 40px 16px 60px; }
     }
   </style>
@@ -175,8 +191,8 @@
     <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   </div>
 
-  <h1 class="headline">¡Pago recibido!<br><em>Tu acceso está en camino</em></h1>
-  <p class="subline">Revisa tu correo en los próximos minutos.<br>Si no aparece, chequea spam o escríbenos.</p>
+  <h1 class="headline">¡Todo listo!<br><em>Tu sistema comienza a configurarse ahora</em></h1>
+  <p class="subline">Tu pago fue confirmado. Agenda tu sesión de setup y deja tu sistema funcionando en aproximadamente 24 horas.</p>
 
   <div class="plan-pill" id="planPill">
     <span class="dot"></span>
@@ -204,11 +220,22 @@
       <div class="step-row">
         <div class="step-num">3</div>
         <div class="step-body">
-          <strong>Tu sistema activo</strong>
+          <strong>Empieza a enviar perfiles y recibir dashboards</strong>
           <span>Después del setup ya puedes enviar perfiles de LinkedIn y recibir tus dashboards por WhatsApp.</span>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- SETUP INFO CARD -->
+  <div class="setup-card">
+    <div class="setup-card-title">⚙️ Importante para tu configuración</div>
+    <ul>
+      <li>En la reunión de setup definimos tu nicho, tipo de prospecto y oferta para personalizar los análisis.</li>
+      <li>Prepara el link de un perfil de LinkedIn de un prospecto real para que lo probemos juntos en la sesión.</li>
+      <li>La sesión dura 30 minutos. Después de eso tu sistema queda activo y listo para usar.</li>
+      <li>Los dashboards llegarán por WhatsApp al número que registraste. Tenlo a mano.</li>
+    </ul>
   </div>
 
   <!-- CALENDLY CTA -->

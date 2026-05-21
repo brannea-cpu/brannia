@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrannIA — Libro de Reclamaciones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0A0A; --bg1: #111111; --bg2: #141420;
+      --purple: #A855F7; --magenta: #E040FB;
+      --gray: #9CA3AF; --gray2: #6B7280;
+      --text: #F3F4F6; --text2: #D1D5DB;
+      --border: rgba(168,85,247,0.18);
+      --success: #22c55e;
+      --font: 'Outfit', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── NAV ── */
+    nav { background: rgba(10,10,10,0.9); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .nav-inner { max-width: 1048px; margin: 0 auto; height: 56px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+    .logo-img { height: 34px; width: auto; display: block; }
+    .logo-link { display: flex; align-items: center; }
+    .nav-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: var(--gray); transition: color 0.2s; }
+    .nav-back:hover { color: var(--purple); }
+
+    /* ── HERO ── */
+    .hero { text-align: center; padding: 52px 24px 36px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(168,85,247,0.11) 0%, transparent 70%); pointer-events: none; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 100px; padding: 5px 14px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--purple); margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 10px; }
+    .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--purple), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { color: var(--gray); font-size: 0.9rem; max-width: 480px; margin: 0 auto; line-height: 1.65; }
+
+    /* ── PAGE ── */
+    .page { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── PROVEEDOR INFO ── */
+    .prov-box { background: var(--bg1); border: 1px solid var(--border); border-radius: 14px; padding: 18px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .prov-item { font-size: 0.84rem; }
+    .prov-item span { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--gray2); margin-bottom: 3px; }
+    .prov-item strong { color: var(--text2); }
+
+    /* ── FORM CARD ── */
+    .form-card { background: var(--bg1); border: 1px solid var(--border); border-radius: 18px; padding: 28px 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
+    .form-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--purple), var(--magenta), var(--purple), transparent); }
+
+    .form-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; gap: 12px; }
+    .form-head h3 { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 3px; }
+    .form-head p { font-size: 0.8rem; color: var(--gray); }
+    .form-badge { display: inline-block; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.35); color: var(--purple); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; white-space: nowrap; }
+
+    .form-sec-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--purple); margin: 22px 0 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(168,85,247,0.15); }
+
+    .form-row { display: grid; gap: 12px; margin-bottom: 12px; }
+    .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 580px) { .form-row.cols-2 { grid-template-columns: 1fr; } }
+
+    .fg { display: flex; flex-direction: column; gap: 6px; }
+    .fg label { font-size: 0.77rem; font-weight: 600; color: var(--gray); letter-spacing: 0.02em; }
+    .fg label span { color: var(--purple); margin-left: 2px; }
+    .fg input, .fg textarea, .fg select {
+      background: var(--bg2); border: 1px solid rgba(168,85,247,0.2); border-radius: 9px;
+      color: var(--text); font-family: var(--font); font-size: 0.9rem; padding: 11px 14px;
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none; width: 100%;
+    }
+    .fg input:focus, .fg textarea:focus, .fg select:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(168,85,247,0.12); }
+    .fg input::placeholder, .fg textarea::placeholder { color: var(--gray2); }
+    .fg select { appearance: none; cursor: pointer; }
+    .fg textarea { resize: vertical; min-height: 100px; }
+
+    /* TYPE TOGGLE */
+    .type-row { display: flex; gap: 10px; margin-bottom: 4px; }
+    .type-opt {
+      flex: 1; display: flex; align-items: center; gap: 10px;
+      background: var(--bg2); border: 1px solid rgba(168,85,247,0.18); border-radius: 9px;
+      padding: 11px 14px; cursor: pointer; transition: all 0.2s;
+      font-size: 0.85rem; color: var(--gray);
+    }
+    .type-opt input[type="radio"] { display: none; }
+    .type-opt.selected { border-color: rgba(168,85,247,0.55); background: rgba(168,85,247,0.08); color: var(--text2); }
+    .type-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .type-dot::after { content: ''; width: 6px; height: 6px; background: var(--purple); border-radius: 50%; display: none; }
+    .type-opt.selected .type-dot::after { display: block; }
+
+    /* SUBMIT */
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, var(--purple), var(--magenta)); color: #fff;
+      border: none; border-radius: 11px; font-family: var(--font); font-size: 1rem; font-weight: 700;
+      padding: 14px 20px; cursor: pointer; margin-top: 20px;
+      transition: opacity 0.2s, transform 0.18s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .submit-btn:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(168,85,247,0.35); }
+    .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .form-legal { font-size: 0.75rem; color: var(--gray2); text-align: center; margin-top: 14px; line-height: 1.65; }
+    .form-legal strong { color: var(--gray); }
+
+    /* SUCCESS */
+    .success-box { display: none; text-align: center; padding: 44px 24px; background: var(--bg1); border: 1px solid rgba(34,197,94,0.25); border-radius: 18px; }
+    .success-icon { width: 60px; height: 60px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .success-icon svg { color: var(--success); }
+    .success-box h3 { font-size: 1.3rem; font-weight: 800; color: var(--success); margin-bottom: 8px; }
+    .success-box p { color: var(--gray); font-size: 0.88rem; max-width: 360px; margin: 0 auto; line-height: 1.6; }
+    .success-ref { display: inline-block; margin-top: 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: 7px; padding: 6px 14px; font-size: 0.8rem; color: var(--gray); font-family: monospace; }
+
+    /* INFO BOX */
+    .info-box { background: rgba(168,85,247,0.07); border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid var(--purple); border-radius: 10px; padding: 14px 18px; margin-top: 20px; font-size: 0.86rem; color: var(--gray); line-height: 1.65; }
+    .info-box a { color: var(--purple); }
+    .info-box strong { color: var(--purple); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 22px; text-align: center; font-size: 0.76rem; color: var(--gray2); }
+
+    @media (max-width: 600px) {
+      .page { padding: 28px 16px 60px; }
+      .form-card { padding: 20px 16px; }
+      .hero { padding: 36px 16px 24px; }
+      .type-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link">
+      <img src="referencias/NEW/logo isotipo.png" alt="BrannIA" class="logo-img">
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Volver al inicio
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Libro de reclamaciones</div>
+  <h1>📋 <em>Libro de Reclamaciones</em></h1>
+  <p>Conforme al Código de Protección y Defensa del Consumidor — Ley N° 29571 y D.S. N° 011-2011-PCM.</p>
+</div>
+
+<div class="page">
+
+  <div class="prov-box">
+    <div class="prov-item"><span>Proveedor</span><strong>Dahanna Montesinos Manrique</strong></div>
+    <div class="prov-item"><span>RUC</span><strong>10726423607</strong></div>
+    <div class="prov-item"><span>Domicilio</span><strong>Av. Angélica Gamarra Mz. M Lt. 1, Urb. Santa Rosa, Lima</strong></div>
+  </div>
+
+  <div id="form-wrap">
+    <div class="form-card">
+      <div class="form-head">
+        <div>
+          <h3>Hoja de Reclamación Virtual</h3>
+          <p>Completa el formulario — recibirás respuesta en máx. 15 días hábiles</p>
+        </div>
+        <span class="form-badge">INDECOPI conforme</span>
+      </div>
+
+      <!-- Sección 1 -->
+      <div class="form-sec-title">1. Identificación del consumidor</div>
+      <div class="form-row cols-2">
+        <div class="fg">
+          <label>Nombre completo <span>*</span></label>
+          <input type="text" id="f-nombre" placeholder="Tu nombre completo">
+        </div>
+        <div class="fg">
+          <label>DNI / CE <span>*</span></label>
+          <input type="text" id="f-dni" placeholder="Número de documento">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Domicilio</label>
+          <input type="text" id="f-domicilio" placeholder="Dirección de residencia">
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="fg">
+          <label>Teléfono <span>*</span></label>
+          <input type="tel" id="f-telefono" placeholder="+51 999 999 999">
+        </div>
+        <div class="fg">
+          <label>Correo electrónico <span>*</span></label>
+          <input type="email" id="f-email" placeholder="tu@correo.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Si es menor de edad, nombre del apoderado</label>
+          <input type="text" id="f-apoderado" placeholder="Solo si aplica">
+        </div>
+      </div>
+
+      <!-- Sección 2 -->
+      <div class="form-sec-title">2. Identificación del bien contratado</div>
+      <div class="form-row cols-2">
+        <div class="fg">
+          <label>Tipo <span>*</span></label>
+          <select id="f-tipo-bien">
+            <option value="">Selecciona...</option>
+            <option value="Producto">Producto</option>
+            <option value="Servicio">Servicio</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Monto reclamado (S/ o USD)</label>
+          <input type="text" id="f-monto" placeholder="Ej: USD 67.00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Descripción del bien o servicio <span>*</span></label>
+          <input type="text" id="f-desc-bien" placeholder="Ej: Plan Starter BrannIA — Mensual">
+        </div>
+      </div>
+
+      <!-- Sección 3 -->
+      <div class="form-sec-title">3. Detalle de la reclamación</div>
+      <div class="fg" style="margin-bottom:12px">
+        <label>Tipo de reclamación <span>*</span></label>
+        <div class="type-row">
+          <label class="type-opt" id="opt-reclamo" onclick="selectType('reclamo')">
+            <input type="radio" name="tipo-rec" value="reclamo">
+            <span class="type-dot"></span>
+            <div>
+              <div style="font-weight:700;color:var(--text);font-size:0.87rem">Reclamo</div>
+              <div style="font-size:0.73rem;margin-top:1px;color:var(--gray)">Disconformidad con el producto/servicio</div>
+            </div>
+          </label>
+          <label class="type-opt" id="opt-queja" onclick="selectType('queja')">
+            <input type="radio" name="tipo-rec" value="queja">
+            <span class="type-dot"></span>
+            <div>
+              <div style="font-weight:700;color:var(--text);font-size:0.87rem">Queja</div>
+              <div style="font-size:0.73rem;margin-top:1px;color:var(--gray)">Malestar con la atención al público</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Detalle de lo ocurrido <span>*</span></label>
+          <textarea id="f-detalle" placeholder="Describe con claridad qué pasó, cuándo ocurrió y cómo te afectó..."></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>Pedido del consumidor <span>*</span></label>
+          <textarea id="f-pedido" placeholder="¿Qué solución esperas? Ej: reembolso, corrección del servicio..." style="min-height:80px"></textarea>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitReclamacion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Enviar reclamación
+      </button>
+      <p class="form-legal">
+        * La formulación de este reclamo no impide acudir a otras vías ni es requisito previo para denunciar ante INDECOPI.<br>
+        * El proveedor responderá en un plazo máximo de <strong>15 días hábiles improrrogables</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="success-box" id="success-box">
+    <div class="success-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h3>Reclamación registrada</h3>
+    <p>Hemos recibido tu reclamación y te responderemos al correo indicado en un plazo máximo de 15 días hábiles.</p>
+    <div class="success-ref" id="success-ref">REF: —</div>
+  </div>
+
+  <div class="info-box">
+    <strong>¿Necesitas ayuda inmediata?</strong> Escríbenos por WhatsApp: <a href="https://wa.me/51992124889" target="_blank">+51 992 124 889</a> o a <a href="mailto:brannia.pe@gmail.com">brannia.pe@gmail.com</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2026 BrannIA — Dahanna Montesinos Manrique · RUC 10726423607 · Lima, Perú</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Reemplazar con tu Public Key de EmailJS
+
+  let selectedType = '';
+
+  function selectType(type) {
+    selectedType = type;
+    document.getElementById('opt-reclamo').classList.toggle('selected', type === 'reclamo');
+    document.getElementById('opt-queja').classList.toggle('selected', type === 'queja');
+  }
+
+  function generateRef() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `REC-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`;
+  }
+
+  function submitReclamacion() {
+    const nombre       = document.getElementById('f-nombre').value.trim();
+    const dni          = document.getElementById('f-dni').value.trim();
+    const email        = document.getElementById('f-email').value.trim();
+    const telefono     = document.getElementById('f-telefono').value.trim();
+    const tipoBien     = document.getElementById('f-tipo-bien').value;
+    const descBien     = document.getElementById('f-desc-bien').value.trim();
+    const detalle      = document.getElementById('f-detalle').value.trim();
+    const pedido       = document.getElementById('f-pedido').value.trim();
+
+    if (!nombre || !dni || !email || !telefono || !tipoBien || !descBien || !detalle || !pedido || !selectedType) {
+      alert('Por favor completa todos los campos obligatorios (*) y selecciona el tipo de reclamación.');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const ref   = generateRef();
+    const fecha = new Date().toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    const params = {
+      to_email:          'brannia.pe@gmail.com',
+      ref_number:        ref,
+      fecha:             fecha,
+      nombre:            nombre,
+      dni:               dni,
+      domicilio:         document.getElementById('f-domicilio').value.trim() || '—',
+      telefono:          telefono,
+      email_cliente:     email,
+      apoderado:         document.getElementById('f-apoderado').value.trim() || '—',
+      tipo_bien:         tipoBien,
+      monto:             document.getElementById('f-monto').value.trim() || '—',
+      descripcion_bien:  descBien,
+      tipo_reclamacion:  selectedType.toUpperCase(),
+      detalle:           detalle,
+      pedido:            pedido,
+    };
+
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', params)
+      .then(() => {
+        document.getElementById('form-wrap').style.display = 'none';
+        const sb = document.getElementById('success-box');
+        sb.style.display = 'block';
+        document.getElementById('success-ref').textContent = 'REF: ' + ref;
+      })
+      .catch((err) => {
+        console.error('EmailJS error:', err);
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Enviar reclamación';
+        alert('Hubo un error al enviar. Por favor escríbenos directamente a brannia.pe@gmail.com o por WhatsApp.');
+      });
+  }
+</script>
+</body>
+</html>

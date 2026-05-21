@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrannIA — Términos y Políticas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0A0A; --bg1: #111111; --bg2: #141420;
+      --purple: #A855F7; --magenta: #E040FB;
+      --gray: #9CA3AF; --gray2: #6B7280;
+      --text: #F3F4F6; --text2: #D1D5DB;
+      --border: rgba(168,85,247,0.18);
+      --font: 'Outfit', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── NAV ── */
+    nav { background: rgba(10,10,10,0.9); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .nav-inner { max-width: 1048px; margin: 0 auto; height: 56px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+    .logo-img { height: 34px; width: auto; display: block; }
+    .logo-link { display: flex; align-items: center; }
+    .nav-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: var(--gray); transition: color 0.2s; }
+    .nav-back:hover { color: var(--purple); }
+
+    /* ── HERO ── */
+    .hero { text-align: center; padding: 56px 24px 40px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(168,85,247,0.13) 0%, transparent 70%); pointer-events: none; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 100px; padding: 5px 14px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--purple); margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 12px; }
+    .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--purple), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { color: var(--gray); font-size: 0.95rem; max-width: 480px; margin: 0 auto; line-height: 1.65; }
+
+    /* ── TABS ── */
+    .tabs-wrap { display: flex; justify-content: center; gap: 8px; padding: 28px 24px; flex-wrap: wrap; }
+    .tab-btn { background: var(--bg1); border: 1px solid var(--border); color: var(--gray); font-family: var(--font); font-size: 0.88rem; font-weight: 600; padding: 10px 22px; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .tab-btn:hover { border-color: rgba(168,85,247,0.45); color: var(--text); }
+    .tab-btn.active { background: rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.55); color: #fff; box-shadow: 0 0 20px rgba(168,85,247,0.15); }
+
+    /* ── CONTENT ── */
+    .section { display: none; max-width: 780px; margin: 0 auto; padding: 0 24px 80px; }
+    .section.visible { display: block; }
+
+    .sec-head { margin-bottom: 36px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .sec-head h2 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .sec-head p { color: var(--gray); font-size: 0.88rem; line-height: 1.6; }
+
+    .lb { margin-bottom: 28px; }
+    .lb h3 {
+      font-size: 0.8rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--purple); margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .lb h3::before { content: ''; display: inline-block; width: 3px; height: 13px; background: linear-gradient(var(--purple), var(--magenta)); border-radius: 2px; flex-shrink: 0; }
+    .lb p, .lb li { color: var(--gray); font-size: 0.9rem; line-height: 1.82; }
+    .lb ul { padding-left: 18px; margin-top: 6px; }
+    .lb li { margin-bottom: 5px; }
+    .lb strong { color: var(--text2); }
+    .lb a { color: var(--purple); }
+    .lb a:hover { text-decoration: underline; }
+
+    .info-box { background: rgba(168,85,247,0.07); border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid var(--purple); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: 0.87rem; color: var(--gray); line-height: 1.65; }
+    .info-box strong { color: var(--purple); }
+
+    .reclaim-link-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: var(--bg1); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px 22px; margin-top: 36px; text-decoration: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .reclaim-link-card:hover { border-color: rgba(168,85,247,0.45); box-shadow: 0 0 28px rgba(168,85,247,0.1); }
+    .reclaim-link-card .rlc-text strong { display: block; font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .reclaim-link-card .rlc-text span { font-size: 0.8rem; color: var(--gray); }
+    .reclaim-link-card .rlc-arrow { font-size: 1.2rem; color: var(--purple); flex-shrink: 0; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 22px; text-align: center; font-size: 0.76rem; color: var(--gray2); }
+    footer a { color: var(--purple); }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 16px 28px; }
+      .section { padding: 0 16px 60px; }
+      .tabs-wrap { gap: 6px; }
+      .tab-btn { font-size: 0.82rem; padding: 9px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link">
+      <img src="referencias/NEW/logo isotipo.png" alt="BrannIA" class="logo-img">
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Volver al inicio
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Información legal</div>
+  <h1>Políticas y<br><em>Términos de BrannIA</em></h1>
+  <p>Transparencia total sobre cómo operamos y cómo protegemos tus derechos como cliente.</p>
+</div>
+
+<div class="tabs-wrap">
+  <button class="tab-btn active" onclick="switchTab('terminos', this)">Términos y Condiciones</button>
+  <button class="tab-btn" onclick="switchTab('devoluciones', this)">Política de Cambios y Devoluciones</button>
+</div>
+
+<!-- ===== TÉRMINOS Y CONDICIONES ===== -->
+<section class="section visible" id="sec-terminos">
+  <div class="sec-head">
+    <h2>Términos y Condiciones</h2>
+    <p>Al contratar cualquier plan de BrannIA, aceptas los siguientes términos en su totalidad. Última actualización: Mayo 2026.</p>
+  </div>
+
+  <div class="lb">
+    <h3>1. Identificación del proveedor</h3>
+    <p>El servicio BrannIA es operado por <strong>Dahanna Montesinos Manrique</strong>, persona natural con negocio, RUC <strong>10726423607</strong>, con domicilio en Av. Angélica Gamarra de León Velarde Mz. M Lt. 1, Urb. Santa Rosa, Lima, Perú. Contacto: <strong>brannia.pe@gmail.com</strong>.</p>
+  </div>
+
+  <div class="lb">
+    <h3>2. Objeto del servicio</h3>
+    <p>BrannIA es un sistema de análisis de perfiles de LinkedIn basado en inteligencia artificial que genera dashboards personalizados para facilitar la prospección comercial. El servicio se entrega a través de un bot de WhatsApp configurado individualmente para cada cliente.</p>
+  </div>
+
+  <div class="lb">
+    <h3>3. Proceso de contratación</h3>
+    <ul>
+      <li>El cliente selecciona un plan (Starter o Closer) y completa el pago.</li>
+      <li>Tras confirmar el pago, BrannIA contactará al cliente por WhatsApp en un plazo máximo de <strong>24 horas hábiles</strong>.</li>
+      <li>Se coordina una reunión de setup de 30 minutos para personalizar el sistema.</li>
+      <li>El sistema queda operativo dentro de las 24 horas siguientes a la reunión de setup.</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>4. Reunión de setup</h3>
+    <p>La reunión de setup constituye la etapa oficial de configuración y aprobación inicial del sistema BrannIA. Durante dicha reunión se definirán:</p>
+    <ul>
+      <li>Variables y métricas de análisis</li>
+      <li>Estructura del dashboard</li>
+      <li>Estilo visual, colores y demás elementos de personalización</li>
+    </ul>
+    <div class="info-box"><strong>Importante:</strong> Una vez aprobada la configuración inicial y entregado el sistema, cualquier modificación estructural posterior podrá generar costos adicionales.</div>
+  </div>
+
+  <div class="lb">
+    <h3>5. Ajustes menores incluidos</h3>
+    <p>Solo se incluye una ronda de ajustes menores sin costo adicional. Se consideran ajustes menores:</p>
+    <ul>
+      <li>Corrección de errores de texto</li>
+      <li>Corrección de nombres</li>
+      <li>Pequeños cambios visuales</li>
+      <li>Reemplazo de imágenes</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>6. Cambios estructurales</h3>
+    <p>Los cambios estructurales tienen un costo de <strong>USD 25 por modificación</strong>. Se consideran cambios estructurales:</p>
+    <ul>
+      <li>Nuevas variables o métricas</li>
+      <li>Nuevas gráficas o secciones</li>
+      <li>Cambios de lógica o rediseño del dashboard</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>7. Política de asistencia</h3>
+    <ul>
+      <li>El cliente podrá reprogramar la reunión hasta <strong>5 horas antes</strong> del horario reservado.</li>
+      <li>Si el cliente no asiste sin previo aviso, BrannIA podrá requerir una nueva reserva según disponibilidad.</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>8. Política de inactividad</h3>
+    <p>Si el cliente no completa el onboarding o no responde durante <strong>20 días calendario</strong> desde la compra, BrannIA podrá cerrar el proceso de implementación sin derecho a reembolso.</p>
+  </div>
+
+  <div class="lb">
+    <h3>9. Planes y precios</h3>
+    <ul>
+      <li><strong>Plan Starter:</strong> Acceso mensual con hasta 5 análisis diarios.</li>
+      <li><strong>Plan Closer:</strong> Acceso trimestral con hasta 8 análisis diarios y reuniones mensuales personalizadas.</li>
+      <li>Los precios vigentes son los publicados en <a href="https://www.brannea.com">www.brannea.com</a> al momento de la compra.</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>10. Resultados comerciales</h3>
+    <p>BrannIA es una herramienta de apoyo a la prospección y generación de conversaciones comerciales. <strong>No garantiza</strong> ventas, reuniones, leads ni ingresos específicos. Los resultados dependen del uso que el cliente haga del sistema y de su estrategia comercial.</p>
+  </div>
+
+  <div class="lb">
+    <h3>11. Inteligencia artificial</h3>
+    <p>Los dashboards y análisis generados utilizan procesos automatizados y modelos de inteligencia artificial, por lo que podrían existir variaciones, estimaciones o interpretaciones generadas automáticamente. BrannIA trabaja continuamente para mejorar la precisión de sus sistemas.</p>
+  </div>
+
+  <div class="lb">
+    <h3>12. Datos de LinkedIn</h3>
+    <p>El cliente declara contar con autorización y legitimidad para utilizar la información compartida con el sistema. El cliente asume total responsabilidad por el uso de datos de terceros y por el cumplimiento de las políticas de LinkedIn.</p>
+  </div>
+
+  <div class="lb">
+    <h3>13. Reventa y redistribución</h3>
+    <p>El cliente no podrá revender, sublicenciar, duplicar ni redistribuir el sistema BrannIA, sus dashboards, metodología ni materiales entregados sin autorización escrita expresa de BrannIA.</p>
+  </div>
+
+  <div class="lb">
+    <h3>14. Obligaciones del cliente</h3>
+    <ul>
+      <li>Usar el servicio para fines comerciales lícitos y de prospección profesional.</li>
+      <li>No compartir el acceso al bot con terceros no autorizados.</li>
+      <li>Proporcionar información veraz durante el proceso de setup.</li>
+      <li>Cumplir con los Términos de Uso de LinkedIn y WhatsApp.</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>15. Disponibilidad del servicio</h3>
+    <p>BrannIA garantiza la disponibilidad continua del servicio dentro de los términos de cada plan. En caso de interrupciones técnicas, BrannIA notificará al cliente por WhatsApp y compensará el tiempo de inactividad con una extensión equivalente del plan.</p>
+    <div class="info-box"><strong>Nota:</strong> BrannIA opera sobre plataformas de terceros (LinkedIn y WhatsApp). Cambios en las políticas de dichas plataformas que afecten el servicio serán comunicados oportunamente.</div>
+  </div>
+
+  <div class="lb">
+    <h3>16. Protección de datos personales</h3>
+    <p>BrannIA recopila y trata los datos personales de sus clientes conforme a la <strong>Ley N° 29733 de Protección de Datos Personales del Perú</strong>. Los datos son utilizados exclusivamente para la prestación del servicio y no son vendidos ni cedidos a terceros. Puedes ejercer tus derechos ARCO escribiendo a <strong>brannia.pe@gmail.com</strong>.</p>
+  </div>
+
+  <div class="lb">
+    <h3>17. Jurisdicción</h3>
+    <p>Estos Términos se rigen por la legislación peruana. Para la resolución de controversias, las partes se someten a los tribunales competentes de Lima, sin perjuicio del derecho del consumidor a recurrir a INDECOPI.</p>
+  </div>
+
+  <a href="reclamaciones.html" class="reclaim-link-card">
+    <div class="rlc-text">
+      <strong>📋 Libro de Reclamaciones</strong>
+      <span>¿Tienes algún reclamo formal? Accede aquí conforme a la Ley N° 29571</span>
+    </div>
+    <span class="rlc-arrow">→</span>
+  </a>
+</section>
+
+<!-- ===== DEVOLUCIONES ===== -->
+<section class="section" id="sec-devoluciones">
+  <div class="sec-head">
+    <h2>Política de Cambios y Devoluciones</h2>
+    <p>Conoce nuestros términos respecto a cancelaciones, cambios de plan y política de no reembolso. Última actualización: Mayo 2026.</p>
+  </div>
+
+  <div class="lb">
+    <h3>1. Naturaleza del servicio</h3>
+    <p>BrannIA es un servicio digital personalizado. Desde el momento en que se confirma el pago, el equipo comienza a trabajar en la configuración individual del sistema: se asignan recursos, se prepara la reunión de setup y se destinan costos operativos específicos para ese usuario.</p>
+    <div class="info-box"><strong>Por esta razón, BrannIA aplica una política de no devoluciones.</strong> Antes de contratar, el cliente tiene acceso completo a la información del servicio a través del sitio web y puede consultar al equipo por WhatsApp sin ningún compromiso.</div>
+  </div>
+
+  <div class="lb">
+    <h3>2. Política de no reembolso</h3>
+    <p>BrannIA no es una herramienta genérica que se activa automáticamente. Después del pago configuramos tu sistema, personalizamos variables, estructura y dashboard según tu servicio. Por eso cada implementación se trabaja individualmente.</p>
+    <p style="margin-top:10px">Una vez procesado el pago, <strong>no se realizan devoluciones de dinero</strong> bajo ninguna de las siguientes circunstancias:</p>
+    <ul>
+      <li>Cambio de opinión después de la compra.</li>
+      <li>No uso del servicio una vez activado.</li>
+      <li>Resultados comerciales que no cumplan las expectativas (los resultados dependen del uso y la estrategia del cliente).</li>
+      <li>Desconocimiento de las características del servicio publicadas en el sitio web.</li>
+      <li>Inactividad del cliente durante el período contratado.</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>3. Cambio de plan</h3>
+    <p>Si deseas cambiar de plan (por ejemplo, de Starter a Closer), puedes solicitarlo escribiendo a <strong>brannia.pe@gmail.com</strong> o por WhatsApp.</p>
+    <ul>
+      <li>Se evalúa la diferencia de costo de manera proporcional al tiempo restante del plan actual.</li>
+      <li>No se realizan reembolsos por la diferencia si el cambio es a un plan de menor valor.</li>
+    </ul>
+  </div>
+
+  <div class="lb">
+    <h3>4. Fallas técnicas imputables a BrannIA</h3>
+    <p>Si el servicio presenta una interrupción técnica directamente imputable a BrannIA (no a terceros como LinkedIn o WhatsApp), el cliente tiene derecho a:</p>
+    <ul>
+      <li>Una extensión del plan equivalente al tiempo de inactividad verificado.</li>
+      <li>Atención prioritaria para la resolución del problema.</li>
+    </ul>
+    <p>Para reportar una falla: <strong>brannia.pe@gmail.com</strong> o WhatsApp de soporte.</p>
+  </div>
+
+  <div class="lb">
+    <h3>5. Cancelación de suscripción</h3>
+    <p>El cliente puede cancelar su plan en cualquier momento para que no se renueve en el siguiente ciclo. La cancelación debe solicitarse con al menos <strong>3 días hábiles de anticipación</strong> antes de la fecha de renovación. El acceso se mantiene activo hasta el final del período ya pagado.</p>
+  </div>
+
+  <div class="lb">
+    <h3>6. Derechos del consumidor</h3>
+    <p>Esta política no limita ni restringe los derechos reconocidos al consumidor por el <strong>Código de Protección y Defensa del Consumidor (Ley N° 29571)</strong>. Siempre puedes presentar una reclamación formal a través de nuestro Libro de Reclamaciones o recurrir a INDECOPI.</p>
+  </div>
+
+  <a href="reclamaciones.html" class="reclaim-link-card">
+    <div class="rlc-text">
+      <strong>📋 Libro de Reclamaciones</strong>
+      <span>¿Tienes algún reclamo formal? Accede aquí conforme a la Ley N° 29571</span>
+    </div>
+    <span class="rlc-arrow">→</span>
+  </a>
+</section>
+
+<footer>
+  <p>&copy; 2026 BrannIA — Dahanna Montesinos Manrique · RUC 10726423607 · Lima, Perú · <a href="mailto:brannia.pe@gmail.com">brannia.pe@gmail.com</a></p>
+</footer>
+
+<script>
+  function switchTab(tab, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sec-' + tab).classList.add('visible');
+    if (el) el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Detect hash on load
+  if (location.hash === '#devoluciones') {
+    document.querySelectorAll('.tab-btn')[1].click();
+  }
+</script>
+</body>
+</html>

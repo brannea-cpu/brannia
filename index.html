@@ -403,7 +403,12 @@
 
     /* ===== FOOTER ===== */
     #fcta { text-align:center; padding-bottom:60px; }
-    footer { border-top:1px solid rgba(168,85,247,0.1); padding:22px; text-align:center; font-size:0.76rem; color:#444; }
+    footer { border-top:1px solid rgba(168,85,247,0.1); padding:32px 22px; text-align:center; font-size:0.76rem; color:#444; }
+    .footer-links { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:18px; }
+    .footer-links a { color:#888; text-decoration:none; transition:color .2s; }
+    .footer-links a:hover { color:#A855F7; }
+    .footer-reclaim { display:inline-flex; align-items:center; gap:6px; background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.35); color:#f87171; padding:7px 16px; border-radius:8px; text-decoration:none; font-size:0.78rem; font-weight:600; transition:all .2s; }
+    .footer-reclaim:hover { background:rgba(220,38,38,0.18); border-color:rgba(220,38,38,0.6); color:#fca5a5; }
 
     /* ===== WHATSAPP FLOAT ===== */
     .wa { position:fixed; bottom:28px; right:24px; z-index:200; width:58px; height:58px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,0.4); transition:all 0.3s ease; }
@@ -875,7 +880,7 @@
       <div class="bonus-t">Nuestras mejores plantillas de mensaje de apertura</div>
       <p class="bonus-d">Listas para copiar, pegar y enviar en LinkedIn sin sonar a bot ni a vendedor desesperado.</p>
     </div>
-    <p class="urgency fu">Solo para los primeros 20 clientes. <strong>Después el precio vuelve a $149/mes.</strong></p>
+    <p class="urgency fu">Precio de lanzamiento disponible solo para los primeros 20 clientes. Luego los planes volverán a su precio de $149/mes.</p>
   </div>
 </section>
 
@@ -904,7 +909,7 @@
       </div>
       <div class="faq-item">
         <div class="faq-q">¿Hay devoluciones?</div>
-        <div class="faq-a">No hay devoluciones porque el sistema se configura y activa manualmente para ti en 24 horas. Si tienes dudas antes de pagar, escríbenos, te explicamos todo sin compromiso.</div>
+        <div class="faq-a">BrannIA no es una herramienta genérica que se activa automáticamente. Después del pago configuramos tu sistema, personalizamos variables, estructura y dashboard según tu servicio. Por eso cada implementación se trabaja individualmente.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">¿Funciona para cualquier nicho?</div>
@@ -926,6 +931,13 @@
 </section>
 
 <footer>
+  <div class="footer-links">
+    <a href="legal.html">Términos y Condiciones</a>
+    <span style="color:#333">·</span>
+    <a href="legal.html#devoluciones">Política de Cambios y Devoluciones</a>
+    <span style="color:#333">·</span>
+    <a href="reclamaciones.html" class="footer-reclaim">📋 Libro de Reclamaciones</a>
+  </div>
   <p>&copy; 2026 BrannIA. Todos los derechos reservados.</p>
 </footer>
 
