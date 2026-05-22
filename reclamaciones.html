@@ -288,9 +288,8 @@
   <p>&copy; 2026 BrannIA — Dahanna Montesinos Manrique · RUC 10726423607 · Lima, Perú</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  emailjs.init("AbevTeoh4LXb4M6Au");
+  const W3F_KEY = 'ee34ce90-d471-4ecb-8ed2-4c0b99e28544';
 
   let selectedType = '';
 
@@ -307,54 +306,66 @@
   }
 
   function submitReclamacion() {
-    const nombre       = document.getElementById('f-nombre').value.trim();
-    const dni          = document.getElementById('f-dni').value.trim();
-    const email        = document.getElementById('f-email').value.trim();
-    const telefono     = document.getElementById('f-telefono').value.trim();
-    const tipoBien     = document.getElementById('f-tipo-bien').value;
-    const descBien     = document.getElementById('f-desc-bien').value.trim();
-    const detalle      = document.getElementById('f-detalle').value.trim();
-    const pedido       = document.getElementById('f-pedido').value.trim();
+    const nombre   = document.getElementById('f-nombre').value.trim();
+    const dni      = document.getElementById('f-dni').value.trim();
+    const email    = document.getElementById('f-email').value.trim();
+    const telefono = document.getElementById('f-telefono').value.trim();
+    const tipoBien = document.getElementById('f-tipo-bien').value;
+    const descBien = document.getElementById('f-desc-bien').value.trim();
+    const detalle  = document.getElementById('f-detalle').value.trim();
+    const pedido   = document.getElementById('f-pedido').value.trim();
 
     if (!nombre || !dni || !email || !telefono || !tipoBien || !descBien || !detalle || !pedido || !selectedType) {
       alert('Por favor completa todos los campos obligatorios (*) y selecciona el tipo de reclamación.');
       return;
     }
 
-    const btn = document.getElementById('submit-btn');
+    const btn  = document.getElementById('submit-btn');
     btn.disabled = true;
     btn.textContent = 'Enviando...';
 
     const ref   = generateRef();
     const fecha = new Date().toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' });
 
-    const params = {
-      to_email:          'brannia.pe@gmail.com',
-      ref_number:        ref,
-      fecha:             fecha,
-      nombre:            nombre,
-      dni:               dni,
-      domicilio:         document.getElementById('f-domicilio').value.trim() || '—',
-      telefono:          telefono,
-      email_cliente:     email,
-      apoderado:         document.getElementById('f-apoderado').value.trim() || '—',
-      tipo_bien:         tipoBien,
-      monto:             document.getElementById('f-monto').value.trim() || '—',
-      descripcion_bien:  descBien,
-      tipo_reclamacion:  selectedType.toUpperCase(),
-      detalle:           detalle,
-      pedido:            pedido,
+    const body = {
+      access_key:       W3F_KEY,
+      subject:          `[Libro de Reclamaciones] ${ref} — ${nombre}`,
+      from_name:        'BrannIA Reclamaciones',
+      replyto:          email,
+      'Referencia':     ref,
+      'Fecha':          fecha,
+      'Nombre':         nombre,
+      'DNI/CE':         dni,
+      'Domicilio':      document.getElementById('f-domicilio').value.trim() || '—',
+      'Teléfono':       telefono,
+      'Email cliente':  email,
+      'Apoderado':      document.getElementById('f-apoderado').value.trim() || '—',
+      'Tipo de bien':   tipoBien,
+      'Monto':          document.getElementById('f-monto').value.trim() || '—',
+      'Descripción':    descBien,
+      'Tipo reclamo':   selectedType.toUpperCase(),
+      'Detalle':        detalle,
+      'Pedido':         pedido,
     };
 
-    emailjs.send('service_vqrptf9', 'template_fbzvtgk', params)
-      .then(() => {
-        document.getElementById('form-wrap').style.display = 'none';
-        const sb = document.getElementById('success-box');
-        sb.style.display = 'block';
-        document.getElementById('success-ref').textContent = 'REF: ' + ref;
+    fetch('https://api.web3forms.com/submit', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body:    JSON.stringify(body),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('form-wrap').style.display = 'none';
+          const sb = document.getElementById('success-box');
+          sb.style.display = 'block';
+          document.getElementById('success-ref').textContent = 'REF: ' + ref;
+        } else {
+          throw new Error(data.message || 'Error desconocido');
+        }
       })
-      .catch((err) => {
-        console.error('EmailJS error:', err);
+      .catch(err => {
+        console.error('Web3Forms error:', err);
         btn.disabled = false;
         btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Enviar reclamación';
         alert('Hubo un error al enviar. Por favor escríbenos directamente a brannia.pe@gmail.com o por WhatsApp.');
