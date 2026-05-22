@@ -151,7 +151,7 @@
   <div class="prov-box">
     <div class="prov-item"><span>Proveedor</span><strong>Dahanna Montesinos Manrique</strong></div>
     <div class="prov-item"><span>RUC</span><strong>10726423607</strong></div>
-    <div class="prov-item"><span>Domicilio</span><strong>Av. Angélica Gamarra Mz. M Lt. 1, Urb. Santa Rosa, Lima</strong></div>
+    <div class="prov-item"><span>Domicilio</span><strong>Av. Angélica Gamarra 1900, Urb. Santa Rosa, Lima</strong></div>
   </div>
 
   <div id="form-wrap">
@@ -290,7 +290,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Reemplazar con tu Public Key de EmailJS
+  emailjs.init("AbevTeoh4LXb4M6Au");
 
   let selectedType = '';
 
@@ -346,7 +346,7 @@
       pedido:            pedido,
     };
 
-    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', params)
+    emailjs.send('service_vqrptf9', 'YOUR_TEMPLATE_ID', params)
       .then(() => {
         document.getElementById('form-wrap').style.display = 'none';
         const sb = document.getElementById('success-box');
