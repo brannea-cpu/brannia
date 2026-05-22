@@ -404,15 +404,13 @@
     /* ===== FOOTER ===== */
     #fcta { text-align:center; padding-bottom:60px; }
     footer { border-top:1px solid rgba(168,85,247,0.1); padding:32px 22px; text-align:center; font-size:0.76rem; color:#444; }
-    .footer-top { display:flex; flex-direction:column; align-items:center; gap:14px; margin-bottom:14px; }
-    .aviso-embed-link { display:inline-block; opacity:0.7; transition:opacity .2s; line-height:0; }
-    .aviso-embed-link:hover { opacity:1; }
-    .aviso-embed-wrap { width:110px; height:72px; overflow:hidden; border-radius:6px; pointer-events:none; }
-    .aviso-embed-wrap embed { display:block; pointer-events:none; }
-    .footer-links { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:14px; font-size:0.88rem; margin:0; }
+    .footer-links { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:14px; font-size:0.88rem; margin:0 0 18px; }
     .footer-links a { color:#999; text-decoration:none; transition:color .2s; }
     .footer-links a:hover { color:#A855F7; }
-    .footer-copy { font-size:0.72rem; color:#444; margin-top:12px; }
+    .aviso-img-link { display:inline-block; opacity:0.75; transition:opacity .2s; margin-bottom:16px; }
+    .aviso-img-link:hover { opacity:1; }
+    .aviso-img-link img { height:72px; width:auto; display:block; }
+    .footer-copy { font-size:0.72rem; color:#444; margin:0; }
 
     /* ===== WHATSAPP FLOAT ===== */
     .wa { position:fixed; bottom:28px; right:24px; z-index:200; width:58px; height:58px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,0.4); transition:all 0.3s ease; }
@@ -935,18 +933,14 @@
 </section>
 
 <footer>
-  <div class="footer-top">
-    <a href="reclamaciones.html" target="_blank" class="aviso-embed-link" title="Libro de Reclamaciones">
-      <div class="aviso-embed-wrap">
-        <embed src="AvisoVirtual.pdf" type="application/pdf" width="110" height="72">
-      </div>
-    </a>
-    <div class="footer-links">
-      <a href="legal.html">Términos y Condiciones</a>
-      <span style="color:#333">·</span>
-      <a href="legal.html#devoluciones">Política de Cambios y Devoluciones</a>
-    </div>
+  <div class="footer-links">
+    <a href="legal.html">Términos y Condiciones</a>
+    <span style="color:#333">·</span>
+    <a href="legal.html#devoluciones">Política de Cambios y Devoluciones</a>
   </div>
+  <a href="reclamaciones.html" target="_blank" class="aviso-img-link" title="Libro de Reclamaciones">
+    <img src="AvisoVirtual.png" alt="Libro de Reclamaciones Virtual">
+  </a>
   <p class="footer-copy">&copy; 2026 BrannIA. Todos los derechos reservados.</p>
 </footer>
 
